@@ -71,7 +71,7 @@ fi
 # make cohort file
 
 cohortfile=${OUTPUT_DIR}/cohort.csv
-rm -rf $cohortfile > 2>/dev/null
+rm -rf $cohortfile  2>/dev/null
 
 mkdir -p $cohortfile
 
