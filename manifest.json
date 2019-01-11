@@ -1,0 +1,40 @@
+{
+  "name": "xcpengine",
+  "label": "xcpengine : Established image-processing libraries and the eXtensible Connectivity Pipeline (XCP) software ",
+  "description": " The XCP imaging pipeline (XCP system) is a free, open-source software package for processing of multimodal neuroimages. The XCP system uses a modular design to deploy analytic routines from leading MRI analysis platforms, including FSL, AFNI, and ANTs.The XCP system is designed to run in the Linux bash shell or from a Docker or Singularity image. We strongly recommend using Docker or Singularity. Users provide XCP Engine with the output from FMRIPREP and specify parameters for the analysis that they wish to perform. XCP Engine parses the user-provided parameters to build and run a processing pipeline. The XCP system supports a number of pipeline modalities, including functional connectivity, volumetric anatomy and perfusion.",
+  "author": " Satterthwaite Lab, Upenn",
+  "cite": "Ciric, Rastko and Rosen, Adon F. G. and Erus, Guray and Cieslak, Matthew and Adebimpe, Azeez and Cook, Philip A. and Bassett, Danielle S. and Davatzikos, Christos and Wolf, Daniel H. and Satterthwaite, Theodore D., Mitigating head motion artifact in functional connectivity MRI",
+  "maintainer": "Flywheel <support@flywheel.io>",
+  "source": "https://github.com/PennBBL/xcpEngine",
+  "url": "https://pipedocs.github.io/",
+  "version": "0.70",
+  "custom": {
+    "docker-image": "flywheel/xcpengine"
+  },
+  "license": "Other",
+  "inputs": {
+    "api_key": {
+      "base": "api-key"
+    },
+    "img": {
+      "description": " T1w or BOLD (fmri or perfusion) nifti from fmriprep output .",
+      "base": "file",
+      "optional": false
+    },
+    "cbfref": {
+      "description": "if BOLD is perfusion, it reference or MO can be suply",
+      "base": "file",
+      "optional": true
+    },
+    "customregressors": {
+      "description": " task or physiological regressors same length as number of BOLD volumes",
+      "base": "file",
+      "optional": true
+      }
+    },
+    "designfile": {"designfile: list all modules to run "
+      "description": " see//github.com/PennBBL/xcpEngine about design file",
+      "base": "file",
+      "optional": false
+    },
+}

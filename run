@@ -1,0 +1,138 @@
+#! /bin/bash
+#
+# Flywheel 2017
+#
+#
+
+
+################################################################################
+# DEFINE VARIABLES
+
+FLYWHEEL_BASE=/flywheel/v0
+MANIFEST_FILE=$FLYWHEEL_BASE/manifest.json
+INPUT_DIR=$FLYWHEEL_BASE/input
+GEAR_OUTPUT_DIR=$FLYWHEEL_BASE/output
+WORKING_DIR=$GEAR_OUTPUT_DIR/work/
+CONTAINER='[flywheel/xcpengine]'
+XCP_OUTPUT_DIR=$GEAR_OUTPUT_DIR/
+input1=/$FLYWHEEL_BASE/input/img
+input2=/$FLYWHEEL_BASE/input/cbfref
+input3=/$FLYWHEEL_BASE/input/customregressors
+input4=/$FLYWHEEL_BASE/input/designfile
+################################################################################
+# DISPLAY XCPENGINE DOCKERFILE FOR BUILD INFO
+
+#echo -e "$CONTAINER BEGIN XCPENGINE DOCKERFILE\n"
+#cat ${FLYWHEEL_BASE}/*Dockerfile
+#echo -e "$CONTAINER END XCPENGINE DOCKERFILE \n"
+
+
+################################################################################
+# CONFIGURE ENV
+
+source ${FLYWHEEL_BASE}/docker-env.sh
+
+
+##############################################################################
+# Parse configuration
+
+   # get the inputs files
+
+if [[ -f $CONFIG_FILE ]]; then
+  eval $(jq -r '.inputs | to_entries[] | "XCP_INPUT_\(.key)=\(.value.location.path)"' $CONFIG_FILE)
+  echo "$(set | grep FW_INPUT)"
+fi
+
+
+
+function parse_config {
+
+  CONFIG_FILE=$FLYWHEEL_BASE/config.json
+  MANIFEST_FILE=$FLYWHEEL_BASE/manifest.json
+
+  if [[ -f $CONFIG_FILE ]]; then
+    echo "$(cat $CONFIG_FILE | jq -r '.config.'$1)"
+  else
+    CONFIG_FILE=$MANIFEST_FILE
+    echo "$(cat $MANIFEST_FILE | jq -r '.config.'$1'.default')"
+  fi
+}
+
+
+################################################################################
+
+if [[ -z "${inpu1}" ]]; then
+  echo -e "primary image is not available!"
+  exit 1
+else
+  img="${input1}"
+fi
+
+# make cohort file
+
+cohortfile=${OUTPUT_DIR}/cohort.csv
+rm -rf $cohortfile > 2>/dev/null
+
+mkdir -p $cohortfile
+
+if [[ -f "${input2}" ]]; then
+  ref="${input2}"
+  echo "be sure that primary image is cbf"
+  echo id0,img,ref > $cohortfile
+  echo $ANALYSIS_ID,$img,$ref >> $cohortfile
+elif [[ -f "${input3}" ]]; then
+  echo "custom regressors"
+  regressor="${input3}"
+  echo id0,img,confound2_custom > $cohortfile
+  echo xcp,$img,$regressor >> $cohortfile
+  else
+  echo " only bold or cbf bold is supply "
+  echo id0,img > $cohortfile
+  echo xcp,$img >> $cohortfile
+fi
+
+# validate design file
+
+if [[ -z "${input4}" ]]; then
+  echo -e "design file is not available!"
+  exit 1
+else
+  designfile="${input4}"
+fi
+
+
+
+################################################################################
+# RUN XCPEENGINE now
+
+
+
+time /xcpEngine-master/xcpEngine \
+      -d  $designfile  \
+      -c  $cohortfile  \
+      -o  ${XCP_OUTPUT_DIR} \
+      -i  ${WORKING_DIR}
+
+
+XCPENGINE_EXITSTATUS=$?
+
+
+################################################################################
+# CLEANUP OUTPUTS
+
+if [[ XCPENGINE_EXITSTATUS == 0 ]] ; then
+
+  echo "$CONTAINER  completed the execution. Check the log files for anyg errors."
+  echo ' '
+  echo ' cleaning the working directory'
+  cd "$GEAR_OUTPUT_DIR"
+
+  chmod -R 777 $GEAR_OUTPUT_DIR
+else
+  echo "$CONTAINER  Errors encountered during execution. cleaning the working directory: check the logfiles for report."
+fi
+
+# Clean up
+rm -rf "$WORKING_DIR"
+
+exit $FMRIPREP_EXITSTATUS
