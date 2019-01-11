@@ -16,25 +16,44 @@
     "api_key": {
       "base": "api-key"
     },
+    "inputs": {
     "img": {
-      "description": " T1w or BOLD (fmri or perfusion) nifti from fmriprep output .",
+      "description": "T1w or BOLD (fmri or perfusion) nifti ",
       "base": "file",
-      "optional": false
-    },
-    "cbfref": {
-      "description": "if BOLD is perfusion, it reference or MO can be suply",
+      "type": {
+        "enum": [
+          "nifti"
+        ]
+      }
+    }, 
+      "cbfref": {
+      "description": "if BOLD is perfusion, it reference or MO can be supply ",
       "base": "file",
-      "optional": true
-    },
-    "customregressors": {
-      "description": " task or physiological regressors same length as number of BOLD volumes",
-      "base": "file",
-      "optional": true
+      "optional": true,
+      "type": {
+        "enum": [
+          "nifti"
+        ]
       }
     },
-    "designfile": {"designfile: list all modules to run "
-      "description": " see//github.com/PennBBL/xcpEngine about design file",
+      "customregressors": {
+      "description": "task or physiological regressors same length as number of BOLD volumes ",
       "base": "file",
-      "optional": false
+      "optional": true,
+      "type": {
+        "enum": [
+          "csv"
+        ]
+      }
     },
-}
+      "designfile": {
+      "description": "designfile: list all modules to run",
+      "base": "file",
+      "type": {
+        "enum": [
+          "text"
+        ]
+      }
+    }
+  }
+} 
