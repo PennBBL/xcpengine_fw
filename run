@@ -61,7 +61,7 @@ function parse_config {
 
 ################################################################################
 
-if [[ -z "${inpu1}" ]]; then
+if [[ -z "${input1}" ]]; then
   echo -e "primary image is not available!"
   exit 1
 else
