@@ -73,7 +73,7 @@ fi
 cohortfile=${OUTPUT_DIR}/cohort.csv
 rm -rf $cohortfile  2>/dev/null
 
-mkdir -p $cohortfile
+#mkdir -p $cohortfile
 
 if [[ -f "${input2}" ]]; then
   ref="${input2}"
