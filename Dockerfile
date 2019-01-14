@@ -1,43 +1,37 @@
-FROM pennbbl/baseimages:common
+#flywheel/xcpengine
 
-RUN sed -i '$iexport XCPEDIR=/xcpEngine-master' $ND_ENTRYPOINT
+############################
+# Get the xcpengine algorithm from DockerHub
+FROM pennbbl/xcpengine
 
-RUN sed -i '$iexport PATH=$PATH:$XCPEDIR' $ND_ENTRYPOINT
-
-RUN bash -c 'cd / \
-    && wget -nv https://github.com/PennBBL/xcpEngine/archive/master.zip \
-    && unzip master.zip \
-    && rm master.zip \
-    && cd  /xcpEngine-master \
-    && wget -nv https://www.dropbox.com/s/92i491mrtslb56i/space.tar.xz \
-    && tar xvfJm space.tar.xz \
-    && rm space.tar.xz' \
-    && echo 123456
-
-RUN bash -c 'BRAINATLAS=/xcpEngine-master/atlas BRAINSPACE=/xcpEngine-master/space XCPEDIR=/xcpEngine-master FSLDIR=/opt/fsl-5.0.10 AFNI_PATH=/opt/afni-latest C3D_PATH=/opt/convert3d-nightly/bin ANTSPATH=/opt/ants-2.2.0 /xcpEngine-master/xcpReset \
-    && BRAINATLAS=/xcpEngine-master/atlas BRAINSPACE=/xcpEngine-master/space XCPEDIR=/xcpEngine-master /xcpEngine-master/utils/repairMetadata'
-
-# Compile genlouvain with octave
-RUN apt-get update -qq \
-    && apt-get install -y -q --no-install-recommends \
-           octave liboctave-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && cd /xcpEngine-master/thirdparty/genlouvain/MEX_SRC \
-    && octave compile_mex.m 
+MAINTAINER pennbbl <pennbbl@pennmedicine.upenn.edu>
 
 
-RUN bash -c 'source /neurodocker/startup.sh'
-
-
-    ###########################
+############################
 # Install basic dependencies
 RUN apt-get update && apt-get -y install \
     jq \
     tar \
     zip \
     build-essential
+    
+ ENV XCPEDIR="/xcpEngine-master" \
+    FSLDIR="/opt/fsl-5.0.11" \
+    AFNI_PATH="/opt/afni-latest" \
+    C3D_PATH="/opt/convert3d-nightly/bin"
 
+RUN sed -i '$iexport XCPEDIR=/xcpEngine-master' $ND_ENTRYPOINT
+
+RUN sed -i '$iexport FSLDIR=/opt/fsl-5.0.11' $ND_ENTRYPOINT
+
+RUN sed -i '$iexport AFNI_PATH=/opt/afni-latest' $ND_ENTRYPOINT
+
+RUN sed -i '$iexport C3D_PATH=/opt/convert3d-nightly/bin' $ND_ENTRYPOINT
+
+RUN sed -i '$iexport ANTSPATH=/opt/ants-2.2.0' $ND_ENTRYPOINT
+
+RUN sed -i '$iexport PATH=$PATH:$XCPEDIR' $ND_ENTRYPOINT   
+RUN bash -c 'XCPEDIR=/xcpEngine-master FSLDIR=/opt/fsl-5.0.11 AFNI_PATH=/opt/afni-latest C3D_PATH=/opt/convert3d-nightly/bin ANTSPATH=/opt/ants-2.2.0 /xcpEngine-master/xcpReset'
 
 # Make directory for flywheel spec (v0)
 ENV FLYWHEEL /flywheel/v0

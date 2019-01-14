@@ -61,43 +61,52 @@ function parse_config {
 
 ################################################################################
 
-if [[ -z "${input1}" ]]; then
+input_file=`find ${input1}/* -maxdepth 0 -not -path '*/\.*' -type f -name "*.nii*" | head -1`
+
+
+if [[ -z "${input_file}" ]]; then
   echo -e "primary image is not available!"
   exit 1
 else
-  img="${input1}"
+  img1="${input_file}"
 fi
 
 # make cohort file
 
-cohortfile=${OUTPUT_DIR}/cohort.csv
-rm -rf $cohortfile  2>/dev/null
+cohortfile=${XCP_OUTPUT_DIR}/cohort.csv
+rm  $cohortfile  2>/dev/null
 
 #mkdir -p $cohortfile
+input_file2=`find ${input2}/* -maxdepth 0 -not -path '*/\.*' -type f -name "*cbf.nii*" | head -1`
 
-if [[ -f "${input2}" ]]; then
-  ref="${input2}"
+if [[ -f "${input_file2}" ]]; then
+  ref="${input_file2}"
   echo "be sure that primary image is cbf"
   echo id0,img,ref > $cohortfile
-  echo $ANALYSIS_ID,$img,$ref >> $cohortfile
-elif [[ -f "${input3}" ]]; then
+  echo xcp,$img1,$ref >> $cohortfile
+
+input_file3=${input3}/*csv
+
+elif [[ -f "${input_file3}" ]]; then
+
   echo "custom regressors"
-  regressor="${input3}"
+  regressor="${input_file3}"
   echo id0,img,confound2_custom > $cohortfile
   echo xcp,$img,$regressor >> $cohortfile
   else
   echo " only bold or cbf bold is supply "
   echo id0,img > $cohortfile
-  echo xcp,$img >> $cohortfile
+  echo xcp,$img1 >> $cohortfile
 fi
 
 # validate design file
+input_file4=`find ${input4}/* -iname "*.dsn"`
 
-if [[ -z "${input4}" ]]; then
+if [[ -z "${input_file4}" ]]; then
   echo -e "design file is not available!"
   exit 1
 else
-  designfile="${input4}"
+  designfile="${input_file4}"
 fi
 
 
