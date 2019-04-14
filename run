@@ -116,7 +116,7 @@ fi
 
 
 
-time /xcpEngine-master/xcpEngine \
+time /xcpEngine/xcpEngine \
       -d  $designfile  \
       -c  $cohortfile  \
       -o  ${XCP_OUTPUT_DIR} \
@@ -144,4 +144,4 @@ fi
 # Clean up
 rm -rf "$WORKING_DIR"
 
-exit $FMRIPREP_EXITSTATUS
+exit XCPENGINE_EXITSTATUS

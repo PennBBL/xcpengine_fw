@@ -7,7 +7,7 @@
   "maintainer": "Flywheel <support@flywheel.io>",
   "source": "https://github.com/PennBBL/xcpEngine",
   "url": "https://pipedocs.github.io/",
-  "version": "0.70",
+  "version": "1.0",
   "custom": {
     "docker-image": "flywheel/xcpengine"
   },
@@ -27,7 +27,7 @@
       }
     }, 
       "cbfref": {
-      "description": "if BOLD is perfusion, it reference or MO can be supply ",
+      "description": "if BOLD is perfusion, its reference or MO can be supply ",
       "base": "file",
       "optional": true,
       "type": {
