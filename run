@@ -15,16 +15,14 @@ GEAR_OUTPUT_DIR=$FLYWHEEL_BASE/output
 WORKING_DIR=$GEAR_OUTPUT_DIR/work/
 CONTAINER='[flywheel/xcpengine]'
 XCP_OUTPUT_DIR=$GEAR_OUTPUT_DIR/
-input1=/$FLYWHEEL_BASE/input/img
-input2=/$FLYWHEEL_BASE/input/cbfref
-input3=/$FLYWHEEL_BASE/input/customregressors
-input4=/$FLYWHEEL_BASE/input/designfile
+
+
 ################################################################################
 # DISPLAY XCPENGINE DOCKERFILE FOR BUILD INFO
 
-#echo -e "$CONTAINER BEGIN XCPENGINE DOCKERFILE\n"
-#cat ${FLYWHEEL_BASE}/*Dockerfile
-#echo -e "$CONTAINER END XCPENGINE DOCKERFILE \n"
+echo -e "$CONTAINER BEGIN XCPENGINE DOCKERFILE\n"
+cat ${FLYWHEEL_BASE}/*Dockerfile
+echo -e "$CONTAINER END XCPENGINE DOCKERFILE \n"
 
 
 ################################################################################

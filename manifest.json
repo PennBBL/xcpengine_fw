@@ -9,25 +9,25 @@
   "url": "https://pipedocs.github.io/",
   "version": "1.0",
   "custom": {
-    "docker-image": "flywheel/xcpengine"
-  },
-  "license": "Other",
+  "docker-image": "flywheel/xcpengine" },
+   "license": "Other",
   "inputs": {
     "api_key": {
       "base": "api-key"
     },
     "inputs": {
-    "img": {
-      "description": "T1w or BOLD (fmri or perfusion) nifti ",
+    "fmriprepdir": {
+      "description": "FMRIprep output directory",
       "base": "file",
+      "optional": true,
       "type": {
         "enum": [
-          "nifti"
+          "zip"
         ]
       }
     }, 
-      "cbfref": {
-      "description": "if BOLD is perfusion, its reference or MO can be supply ",
+      "img": {
+      "description": "T1w or bold or asl image ",
       "base": "file",
       "optional": true,
       "type": {
@@ -36,13 +36,13 @@
         ]
       }
     },
-      "customregressors": {
-      "description": "task or physiological regressors same length as number of BOLD volumes ",
+      "m0": {
+      "description": "M0 images for cbf calibration",
       "base": "file",
       "optional": true,
       "type": {
         "enum": [
-          "csv"
+          "nifti"
         ]
       }
     },
@@ -51,9 +51,10 @@
       "base": "file",
       "type": {
         "enum": [
-          "text"
+          "csv"
         ]
       }
     }
   }
-} 
+}
+}
