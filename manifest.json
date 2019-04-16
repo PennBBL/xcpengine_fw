@@ -27,7 +27,17 @@
       }
     }, 
       "img": {
-      "description": "T1w or bold or asl image ",
+      "description": "asl image ",
+      "base": "file",
+      "optional": true,
+      "type": {
+        "enum": [
+          "nifti"
+        ]
+      }
+    },
+    "struct": {
+      "description": "T1w  image ",
       "base": "file",
       "optional": true,
       "type": {

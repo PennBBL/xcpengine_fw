@@ -15,6 +15,11 @@ GEAR_OUTPUT_DIR=$FLYWHEEL_BASE/output
 WORKING_DIR=$GEAR_OUTPUT_DIR/work/
 CONTAINER='[flywheel/xcpengine]'
 XCP_OUTPUT_DIR=$GEAR_OUTPUT_DIR/
+FMRIPREPDIR=$INPUT_DIR/fmriprepdir
+IMG=$INPUT_DIR/img
+M0=$INPUT_DIR/m0
+STRUCT=$INPUT_DIR/struct
+DESIGNFILE=$INPUT_DIR/designfile
 
 
 ################################################################################
@@ -59,60 +64,59 @@ function parse_config {
 
 ################################################################################
 
-input_file=`find ${input1}/* -maxdepth 0 -not -path '*/\.*' -type f -name "*.nii*" | head -1`
+# check the design file
 
-
-if [[ -z "${input_file}" ]]; then
-  echo -e "primary image is not available!"
-  exit 1
-else
-  img1="${input_file}"
+if [[ -z "${DESIGNFILE}" ]]; then
+    echo -e "The design file is not supply or not available  \n!"
+    echo -e " SEE https://xcpengine.readthedocs.io/config/design.html#designfile \n "
+    exit 1
 fi
 
-# make cohort file
+# check fmriprep directory
+if file  $FMRIPREPDIR | grep "Zip archive"; then 
+  echo "FMRIPREP output is zip file and will be unzipped"
+  mkdir -p $XCP_OUTPUT_DIR/fmriprep
+  unzip $FMRIPREPDIR -d $XCP_OUTPUT_DIR/fmriprep
+else  
+  cp  $FMRIPREPDIR/* $XCP_OUTPUT_DIR/fmriprep/
+fi
+cohortfile=${XCP_OUTPUT_DIR}/cohortfile.csv
+# make cohort file with fmriprep or image or cbf (and or mo)
 
-cohortfile=${XCP_OUTPUT_DIR}/cohort.csv
-rm  $cohortfile  2>/dev/null
-
-#mkdir -p $cohortfile
-input_file2=`find ${input2}/* -maxdepth 0 -not -path '*/\.*' -type f -name "*cbf.nii*" | head -1`
-
-if [[ -f "${input_file2}" ]]; then
-  ref="${input_file2}"
-  echo "be sure that primary image is cbf"
-  echo id0,img,ref > $cohortfile
-  echo xcp,$img1,$ref >> $cohortfile
-
-input_file3=${input3}/*csv
-
-elif [[ -f "${input_file3}" ]]; then
-
-  echo "custom regressors"
-  regressor="${input_file3}"
-  echo id0,img,confound2_custom > $cohortfile
-  echo xcp,$img,$regressor >> $cohortfile
-  else
-  echo " only bold or cbf bold is supply "
-  echo id0,img > $cohortfile
-  echo xcp,$img1 >> $cohortfile
+if [[ -f $XCP_OUTPUT_DIR/fmriprep ]]; then 
+     rm -rf ${cohortfile}  
+     echo id0,id1,id2,img > ${cohortfile} # 3 ids for now 
+     im=$XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*desc-preproc_bold.nii.gz
+     for i in  $im
+         do
+         id0=$(echo $i |cut -d'_' -f3)
+         id1=$(echo $i |cut -d'_' -f4)
+         id2=$(echo $i |cut -d'_' -f5)
+         echo $id0,$id1,$id2,$i >> $cohortfile
+      done
+elif [[ -f ${IMG}]]; then 
+      echo "The  asl image  \n"
+      echo " Ensure appropriate design file is supplied \n"
+      anatdir=$XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/anat/
+      rm -rf ${cohortfile}
+      echo id0,img,anatdir > $cohortfile
+      echo xcp,${IMG},${anatdir}>> $cohortfile  
+      if [[ -f ${M0} ]]; then
+      rm -rf ${cohortfile}
+      echo "${IMG} is asl \n" 
+      echo id0,img,anatdir,m0 > $cohortfile
+      echo cbf,${IMG},${anatdir},${M0}>> $cohortfile 
+      fi
 fi
 
-# validate design file
-input_file4=`find ${input4}/* -iname "*.dsn"`
-
-if [[ -z "${input_file4}" ]]; then
-  echo -e "design file is not available!"
-  exit 1
-else
-  designfile="${input_file4}"
-fi
-
-
+if [[ -f ${STRUCT} ]]; then 
+   rm -rf ${cohortfile}
+   echo id0,img > $cohortfile
+   echo struct,${STRUCT} >> $cohortfile
+fi 
 
 ################################################################################
 # RUN XCPEENGINE now
-
-
 
 time /xcpEngine/xcpEngine \
       -d  $designfile  \
