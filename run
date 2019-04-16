@@ -94,7 +94,7 @@ if [[ -f $XCP_OUTPUT_DIR/fmriprep ]]; then
          id2=$(echo $i |cut -d'_' -f5)
          echo $id0,$id1,$id2,$i >> $cohortfile
       done
-elif [[ -f ${IMG}]]; then 
+elif [[ -f ${IMG} ]]; then 
       echo "The  asl image  \n"
       echo " Ensure appropriate design file is supplied \n"
       anatdir=$XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/anat/

@@ -4,7 +4,7 @@
   "description": " The XCP imaging pipeline (XCP system) is a free, open-source software package for processing of multimodal neuroimages. The XCP system uses a modular design to deploy analytic routines from leading MRI analysis platforms, including FSL, AFNI, and ANTs.The XCP system is designed to run in the Linux bash shell or from a Docker or Singularity image. We strongly recommend using Docker or Singularity. Users provide XCP Engine with the output from FMRIPREP and specify parameters for the analysis that they wish to perform. XCP Engine parses the user-provided parameters to build and run a processing pipeline. The XCP system supports a number of pipeline modalities, including functional connectivity, volumetric anatomy and perfusion.",
   "author": " Satterthwaite Lab, Upenn",
   "cite": "Ciric, Rastko and Rosen, Adon F. G. and Erus, Guray and Cieslak, Matthew and Adebimpe, Azeez and Cook, Philip A. and Bassett, Danielle S. and Davatzikos, Christos and Wolf, Daniel H. and Satterthwaite, Theodore D., Mitigating head motion artifact in functional connectivity MRI",
-  "maintainer": "Flywheel <support@flywheel.io>",
+  "maintainer": "Ted Satterthwaite <sattertt@upenn.edu>",
   "source": "https://github.com/PennBBL/xcpEngine",
   "url": "https://pipedocs.github.io/",
   "version": "1.0",
