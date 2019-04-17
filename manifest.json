@@ -9,7 +9,14 @@
   "url": "https://pipedocs.github.io/",
   "version": "1.0",
   "custom": {
-  "docker-image": "flywheel/xcpengine" },
+    "gear-builder": {
+      "category": "analysis",
+      "image": "pennbbl/qsiprep-fw:0.1.5_0.2.3"
+    },
+    "flywheel": {
+      "suite": "PennBBL"
+    }
+  },
    "license": "Other",
   "inputs": {
     "api_key": {
