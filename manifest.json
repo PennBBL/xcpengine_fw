@@ -11,67 +11,48 @@
   "custom": {
     "gear-builder": {
       "category": "analysis",
-      "image": "pennbbl/qsiprep-fw:0.1.5_0.2.3"
+      "image": "pennbbl/xcpengine-fw:1_0.1"
     },
     "flywheel": {
       "suite": "PennBBL"
     }
   },
-   "license": "Other",
+ 
   "inputs": {
-    "api_key": {
-      "base": "api-key"
-    },
-    "inputs": {
-    "fmriprepdir": {
-      "description": "FMRIprep output directory",
-      "base": "file",
-      "optional": true,
-      "type": {
-        "enum": [
-          "zip"
-        ]
-      }
-    }, 
-      "img": {
-      "description": "asl image ",
-      "base": "file",
-      "optional": true,
-      "type": {
-        "enum": [
-          "nifti"
-        ]
-      }
-    },
-    "struct": {
-      "description": "T1w  image ",
-      "base": "file",
-      "optional": true,
-      "type": {
-        "enum": [
-          "nifti"
-        ]
-      }
-    },
-      "m0": {
-      "description": "M0 images for cbf calibration",
-      "base": "file",
-      "optional": true,
-      "type": {
-        "enum": [
-          "nifti"
-        ]
-      }
-    },
-      "designfile": {
-      "description": "designfile: list all modules to run",
-      "base": "file",
-      "type": {
-        "enum": [
-          "csv"
-        ]
-      }
-    }
-  }
+              "api_key": { "base": "api-key"},
+              "fmriprepdir": {
+                           "description": "FMRIprep output directory",
+                           "base": "file",
+                           "optional": true,
+                           "type": {
+                               "enum": ["zip"] }
+                            }, 
+              "img":        {
+                            "description": "asl image ",
+                            "base": "file",
+                            "optional": true,
+                            "type": {
+                               "enum": ["nifti"] }
+                            },
+             "struct":      {
+                            "description": "T1w  image ",
+                            "base": "file",
+                            "optional": true,
+                             "type": {
+                                 "enum": ["nifti"] }
+                            },
+              "m0":         {
+                            "description": "M0 images for cbf calibration",
+                            "base": "file",
+                            "optional": true,
+                            "type": {
+                                 "enum": ["nifti"] }
+                            },
+              "designfile": {
+                            "description": "designfile: list all modules to run",
+                            "base": "file",
+                            "type": {"enum": ["csv"] }
+                          }
+             }
 }
-}
+
