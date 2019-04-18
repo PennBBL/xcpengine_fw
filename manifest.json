@@ -8,6 +8,7 @@
   "source": "https://github.com/PennBBL/xcpEngine",
   "url": "https://pipedocs.github.io/",
   "version": "1.0",
+  "license": "Other",
   "custom": {
     "gear-builder": {
       "category": "analysis",
