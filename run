@@ -71,21 +71,16 @@ if [[ -z "${DESIGNFILE}/*dsn" ]]; then
     echo -e " SEE https://xcpengine.readthedocs.io/config/design.html#designfile \n "
     exit 1
 fi
-
+cohortfile=${XCP_OUTPUT_DIR}/cohortfile.csv
 # check fmriprep directory
 if [[ $FMRIPREPDIR/*zip ]]; then 
   echo "FMRIPREP output is zip file and will be unzipped"
   fmriprepout=$(ls -f $FMRIPREPDIR/*zip)
   mkdir -p $XCP_OUTPUT_DIR/fmriprep
   unzip ${fmriprepout} -d $XCP_OUTPUT_DIR/fmriprep
-fi
-cohortfile=${XCP_OUTPUT_DIR}/cohortfile.csv
-# make cohort file with fmriprep or image or cbf (and or mo)
-
-if [[ -f $XCP_OUTPUT_DIR/fmriprep ]]; then 
-     rm -rf ${cohortfile}  
-     echo id0,id1,id2,img > ${cohortfile} # 3 ids for now 
-     im=$XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*desc-preproc_bold.nii.gz
+  rm -rf ${cohortfile}  
+  echo id0,id1,id2,img > ${cohortfile} # 3 ids for now 
+  im=$XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*desc-preproc_bold.nii.gz
      for i in  $im
          do
          id0=$(echo $i |cut -d'_' -f2)
