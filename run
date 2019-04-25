@@ -83,7 +83,7 @@ if [[ $FMRIPREPDIR/*zip ]]; then
   im=$XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*desc-preproc_bold.nii.gz
      for i in  $im
          do
-         id0=$(echo $i |cut -d'_' -f2)
+         id0=$(echo $i |cut -d'_' -f3)
          id1=$(echo $i |cut -d'_' -f4)
          id2=$(echo $i |cut -d'_' -f5)
          echo $id0,$id1,$id2,$i >> $cohortfile
@@ -122,7 +122,7 @@ time /xcpEngine/xcpEngine \
       -i  ${WORKING_DIR}
 
 rm -rf $XCP_OUTPUT_DIR/fmriprep
-zip -r -q ${XCP_OUTPUT_DIR}/xcpengine xcpEngineouput.zip
+zip ${XCP_OUTPUT_DIR}/xcpEngineouput.zip -r ${XCP_OUTPUT_DIR}/xcpengine 
 rm -rf $XCP_OUTPUT_DIR/xcpengine
 
 
