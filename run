@@ -66,19 +66,18 @@ function parse_config {
 
 # check the design file
 
-if [[ -z "${DESIGNFILE}" ]]; then
+if [[ -z "${DESIGNFILE}/*dsn" ]]; then
     echo -e "The design file is not supply or not available  \n!"
     echo -e " SEE https://xcpengine.readthedocs.io/config/design.html#designfile \n "
     exit 1
 fi
 
 # check fmriprep directory
-if file  $FMRIPREPDIR | grep "Zip archive"; then 
+if [[ $FMRIPREPDIR/*zip ]]; then 
   echo "FMRIPREP output is zip file and will be unzipped"
+  fmriprepout=$(ls -f $FMRIPREPDIR/*zip)
   mkdir -p $XCP_OUTPUT_DIR/fmriprep
-  unzip $FMRIPREPDIR -d $XCP_OUTPUT_DIR/fmriprep
-else  
-  cp  $FMRIPREPDIR/* $XCP_OUTPUT_DIR/fmriprep/
+  unzip ${fmriprepout} -d $XCP_OUTPUT_DIR/fmriprep
 fi
 cohortfile=${XCP_OUTPUT_DIR}/cohortfile.csv
 # make cohort file with fmriprep or image or cbf (and or mo)
@@ -89,40 +88,47 @@ if [[ -f $XCP_OUTPUT_DIR/fmriprep ]]; then
      im=$XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*desc-preproc_bold.nii.gz
      for i in  $im
          do
-         id0=$(echo $i |cut -d'_' -f3)
+         id0=$(echo $i |cut -d'_' -f2)
          id1=$(echo $i |cut -d'_' -f4)
          id2=$(echo $i |cut -d'_' -f5)
          echo $id0,$id1,$id2,$i >> $cohortfile
       done
-elif [[ -f ${IMG} ]]; then 
+elif [[ -f ${IMG}/*nii.gz ]]; then 
       echo "The  asl image  \n"
       echo " Ensure appropriate design file is supplied \n"
-      anatdir=$XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/anat/
+      anatdir=$(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/anat/)
       rm -rf ${cohortfile}
+      cbfimg=$(ls -f ${IMG}/*nii.gz)
       echo id0,img,anatdir > $cohortfile
-      echo xcp,${IMG},${anatdir}>> $cohortfile  
-      if [[ -f ${M0} ]]; then
+      echo sub-01,${cbfimg},${anatdir}>> $cohortfile  
+      if [[ -f ${M0}/*/nii.gz ]]; then
+      mo=$(ls -f ${M0}/*/nii.gz )
       rm -rf ${cohortfile}
-      echo "${IMG} is asl \n" 
+      echo "${M0} is asl \n" 
       echo id0,img,anatdir,m0 > $cohortfile
-      echo cbf,${IMG},${anatdir},${M0}>> $cohortfile 
+      echo sub-1,${cbfimg},${anatdir},${m0}>> $cohortfile 
       fi
 fi
 
-if [[ -f ${STRUCT} ]]; then 
+if [[ -f ${STRUCT}/*nii.gz ]]; then
+   struct=$(ls -f ${STRUCT}/*nii.gz) 
    rm -rf ${cohortfile}
    echo id0,img > $cohortfile
-   echo struct,${STRUCT} >> $cohortfile
+   echo sub-01,${struct} >> $cohortfile
 fi 
 
 ################################################################################
 # RUN XCPEENGINE now
-
+designfile=$(ls -f $DESIGNFILE/*dsn)
 time /xcpEngine/xcpEngine \
       -d  $designfile  \
       -c  $cohortfile  \
-      -o  ${XCP_OUTPUT_DIR} \
+      -o  ${XCP_OUTPUT_DIR}/xcpengine \
       -i  ${WORKING_DIR}
+
+rm -rf $XCP_OUTPUT_DIR/fmriprep
+zip -r -q ${XCP_OUTPUT_DIR}/xcpengine xcpEngineouput.zip
+rm -rf $XCP_OUTPUT_DIR/xcpengine
 
 
 XCPENGINE_EXITSTATUS=$?
