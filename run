@@ -88,18 +88,20 @@ if [[ $FMRIPREPDIR/*zip ]]; then
          id2=$(echo $i |cut -d'_' -f5)
          echo $id0,$id1,$id2,$i >> $cohortfile
       done
-elif [[ -f ${IMG}/*nii.gz ]]; then 
+fi
+
+if [[ -f ${IMG}/*nii.gz ]]; then 
       echo "The  asl image  \n"
       echo " Ensure appropriate design file is supplied \n"
       anatdir=$(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/anat/)
       rm -rf ${cohortfile}
       cbfimg=$(ls -f ${IMG}/*nii.gz)
       echo id0,img,anatdir > $cohortfile
-      echo sub-01,${cbfimg},${anatdir}>> $cohortfile  
-      if [[ -f ${M0}/*/nii.gz ]]; then
-      mo=$(ls -f ${M0}/*/nii.gz )
+      echo sub-01,${cbfimg},${anatdir} >> $cohortfile  
+      if [[ -f ${M0}/*nii.gz ]]; then
+      m0=$(ls -f ${M0}/*nii.gz )
+    
       rm -rf ${cohortfile}
-      echo "${M0} is asl \n" 
       echo id0,img,anatdir,m0 > $cohortfile
       echo sub-1,${cbfimg},${anatdir},${m0}>> $cohortfile 
       fi
@@ -132,17 +134,14 @@ XCPENGINE_EXITSTATUS=$?
 ################################################################################
 # CLEANUP OUTPUTS
 
-if [[ XCPENGINE_EXITSTATUS == 0 ]] ; then
 
-  echo "$CONTAINER  completed the execution. Check the log files for anyg errors."
-  echo ' '
-  echo ' cleaning the working directory'
-  cd "$GEAR_OUTPUT_DIR"
+echo "$CONTAINER  completed the execution. Check the log files for anyg errors."
+echo ' '
+echo ' cleaning the working directory'
+cd "$GEAR_OUTPUT_DIR"
 
   chmod -R 777 $GEAR_OUTPUT_DIR
-else
-  echo "$CONTAINER  Errors encountered during execution. cleaning the working directory: check the logfiles for report."
-fi
+
 
 # Clean up
 rm -rf "$WORKING_DIR"

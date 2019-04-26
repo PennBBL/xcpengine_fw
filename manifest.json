@@ -1,8 +1,8 @@
 {
-	"name": "xcpengine",
-	"label": "xcpengine",
-	"description": " The XCP imaging pipeline (XCP system) for  preprocessing of structural and funtional data.",
-	"version": "1.04115",
+	"name": "xcpengine-fw",
+	"label": "XCPENGINE: pipeline for processing of  structural and functional data.",
+	"description": " The XCP imaging pipeline (XCP system) for  preprocessing of structural and functional data.",
+	"version": "1.06",
 	"inputs": {
 		"api_key": {
 			"base": "api-key"
@@ -10,12 +10,12 @@
 		"designfile": {
 			"base": "file",
 			"description": "designfile: list all modules to run"
-
 		},
 		"fmriprepdir": {
 			"base": "file",
 			"description": "FMRIprep output directory",
-			"optional": true },
+			"optional": true
+		},
 		"img": {
 			"base": "file",
 			"description": "asl image ",
@@ -57,7 +57,8 @@
 	"custom": {
 		"gear-builder": {
 			"category": "analysis",
-			"image": "xcpengine:latest"
-		}
+			"image": "pennbbl/xcpengine"
+		},
+	"flywheel":{"suite": "PennBBL"}
 	}
 }
