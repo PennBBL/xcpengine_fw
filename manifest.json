@@ -19,32 +19,17 @@
 		"img": {
 			"base": "file",
 			"description": "asl image ",
-			"optional": true,
-			"type": {
-				"enum": [
-					"nifti"
-				]
-			}
+			"optional": true
 		},
 		"m0": {
 			"base": "file",
 			"description": "M0 images for cbf calibration",
-			"optional": true,
-			"type": {
-				"enum": [
-					"nifti"
-				]
-			}
+			"optional": true
 		},
 		"struct": {
 			"base": "file",
 			"description": "T1w  image ",
-			"optional": true,
-			"type": {
-				"enum": [
-					"nifti"
-				]
-			}
+			"optional": true
 		}
 	},
 	"config":{},

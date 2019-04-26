@@ -72,6 +72,13 @@ if [[ -z "${DESIGNFILE}/*dsn" ]]; then
     exit 1
 fi
 cohortfile=${XCP_OUTPUT_DIR}/cohortfile.csv
+
+if [[ -f $(ls -f ${STRUCT}/*nii.gz) ]]; then
+   struct=$(ls -f ${STRUCT}/*nii.gz) 
+   rm -rf ${cohortfile}
+   echo id0,img > $cohortfile
+   echo sub-01,${struct} >> $cohortfile
+fi
 # check fmriprep directory
 if [[ $FMRIPREPDIR/*zip ]]; then 
   echo "FMRIPREP output is zip file and will be unzipped"
@@ -90,15 +97,17 @@ if [[ $FMRIPREPDIR/*zip ]]; then
       done
 fi
 
-if [[ -f ${IMG}/*nii.gz ]]; then 
+
+if  [[ -f $(ls -f ${IMG}/*nii.gz) ]]; then 
       echo "The  asl image  \n"
       echo " Ensure appropriate design file is supplied \n"
       anatdir=$(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/anat/)
       rm -rf ${cohortfile}
       cbfimg=$(ls -f ${IMG}/*nii.gz)
+      echo "cbf image doing"
       echo id0,img,anatdir > $cohortfile
       echo sub-01,${cbfimg},${anatdir} >> $cohortfile  
-      if [[ -f ${M0}/*nii.gz ]]; then
+      if [[ -f $(ls -f ${M0}/*nii.gz) ]]; then
       m0=$(ls -f ${M0}/*nii.gz )
     
       rm -rf ${cohortfile}
@@ -106,13 +115,6 @@ if [[ -f ${IMG}/*nii.gz ]]; then
       echo sub-1,${cbfimg},${anatdir},${m0}>> $cohortfile 
       fi
 fi
-
-if [[ -f ${STRUCT}/*nii.gz ]]; then
-   struct=$(ls -f ${STRUCT}/*nii.gz) 
-   rm -rf ${cohortfile}
-   echo id0,img > $cohortfile
-   echo sub-01,${struct} >> $cohortfile
-fi 
 
 ################################################################################
 # RUN XCPEENGINE now
@@ -124,7 +126,8 @@ time /xcpEngine/xcpEngine \
       -i  ${WORKING_DIR}
 
 rm -rf $XCP_OUTPUT_DIR/fmriprep
-zip ${XCP_OUTPUT_DIR}/xcpEngineouput.zip -r ${XCP_OUTPUT_DIR}/xcpengine 
+cd  $XCP_OUTPUT_DIR/ 
+zip -r -q ${XCP_OUTPUT_DIR}/xcpEngineouput.zip xcpengine
 rm -rf $XCP_OUTPUT_DIR/xcpengine
 
 
