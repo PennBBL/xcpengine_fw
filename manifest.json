@@ -16,23 +16,33 @@
 			"description": "FMRIprep output directory",
 			"optional": true
 		},
+		"antsct": {
+			"base": "file",
+			"description": "Structural output directory",
+			"optional": true
+		},
 		"img": {
 			"base": "file",
-			"description": "asl image ",
+			"description": "asl or structural image ",
 			"optional": true
 		},
 		"m0": {
 			"base": "file",
 			"description": "M0 images for cbf calibration",
 			"optional": true
-		},
-		"struct": {
-			"base": "file",
-			"description": "T1w  image ",
-			"optional": true
 		}
 	},
-	"config":{},
+	"config":{"analysis_type": {
+		"description": " analysis type: [fc,struc,task,cbf]",
+		"type": "string",
+		"default": "xcp"},
+		"task_name": {"description": " name of the task to perform either task regression or task ",
+			"type": "string",
+			"default": ""},
+		"task_file": {"description": " Json file with event times and contrasts",
+				"type": "file",
+				"default": ""}	
+	},
 	"author": "Ted Satterthwaite ",
 	"maintainer": "Ted Satterthwaite",
 	"cite": "Ciric, Rastko and Rosen, Adon F. G. and Erus, Guray and Cieslak, Matthew and Adebimpe, Azeez and Cook, Philip A. and Bassett, Danielle S. and Davatzikos, Christos and Wolf, Daniel H. and Satterthwaite, Theodore D., Mitigating head motion artifact in functional connectivity MRI",
