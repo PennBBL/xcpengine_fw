@@ -15,7 +15,7 @@ RUN apt-get update && apt-get -y install \
 
 ############################
 # Install the Flywheel SDK
-RUN pip install 'flywheel-sdk~=5.0.4','pandas','json'
+RUN pip install flywheel-sdk
 
 ############################
 # Install the Flywheel BIDS client

@@ -61,6 +61,10 @@ function parse_config {
   fi
 }
 
+analysis_type="$(parse_config 'analysis_type')"
+task_name="$(parse_config 'task_name')"
+
+# task name to be work on 
 
 ################################################################################
 
@@ -78,17 +82,17 @@ if [[ $FMRIPREPDIR/*zip ]]; then
   echo "FMRIPREP output is zip file and will be unzipped"
   fmriprepout=$(ls -f $FMRIPREPDIR/*zip)
   mkdir -p $XCP_OUTPUT_DIR/fmriprep
-  unzip -r -q ${fmriprepout} -d $XCP_OUTPUT_DIR/fmriprep
+  unzip -q ${fmriprepout} -d $XCP_OUTPUT_DIR/fmriprep
   rm -rf ${cohortfile}  
-  echo id0,id1,id2,img > ${cohortfile} # 3 ids for now 
-  im=$XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*desc-preproc_bold.nii.gz
-  base1=$(basename $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*)
-  base2=$(basename $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*)
+  echo id0,id1,id2,id3,img > ${cohortfile} # 3 ids for now 
+  im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*desc-preproc_bold.nii.gz)
+  base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
+  base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*))
      for i in  $im
          do
          id0=$(echo $i |cut -d'_' -f3)
          id1=$(echo $i |cut -d'_' -f4)
-         echo $base1,$base2,$id0,$id1,$id2,$i >> $cohortfile
+         echo $base1,$base2,$id0,$id1,$i >> $cohortfile
       done
 fi
 
@@ -97,7 +101,7 @@ if  [[ -f $(ls -f ${IMG}/*nii.gz) ]]; then
       img=$(ls -f ${IMG}/*nii.gz)
       echo " Ensure appropriate design file is supplied \n"
       anatdir=$(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/anat/)
-      if [[ -d ${anatdir}]]; then 
+      if [[ -d ${anatdir} ]]; then 
       rm -rf ${cohortfile}
       echo "\n"
       echo id0,img,anatdir > $cohortfile
@@ -110,7 +114,7 @@ if  [[ -f $(ls -f ${IMG}/*nii.gz) ]]; then
               fi
       elif [[ -f $(ls -f ${STRUCT}/*zip ) ]]; then 
         rm -rf ${cohortfile}
-         anat=$(ls -f ${STRUCT}/*zip
+         anat=$(ls -f ${STRUCT}/*zip)
           unzip  -q ${anat} -d $XCP_OUTPUT_DIR/antsct
           antsctdir=$(ls -d $XCP_OUTPUT_DIR/antsct/xcpengine/*/struc)
           echo id0,img,antsct > $cohortfile
@@ -139,7 +143,7 @@ time /xcpEngine/xcpEngine \
 
 rm -rf $XCP_OUTPUT_DIR/fmriprep
 cd  $XCP_OUTPUT_DIR/ 
-zip -r -q ${XCP_OUTPUT_DIR}/xcpEngineouput.zip xcpengine
+zip -r -q ${XCP_OUTPUT_DIR}/xcpEngineouput_${analysis_type}.zip xcpengine
 rm -rf $XCP_OUTPUT_DIR/xcpengine
 
 
