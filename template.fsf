@@ -1,0 +1,166 @@
+set fmri(version) 6.00
+set fmri(inmelodic) 0
+
+set fmri(level) 1
+
+set fmri(analysis) 7
+
+set fmri(relative_yn) 0
+
+set fmri(help_yn) 0
+
+set fmri(featwatcher_yn) 0
+
+set fmri(sscleanup_yn) 0
+
+set fmri(outputdir)
+
+set fmri(tr)
+
+set fmri(npts)
+
+set fmri(ndelete) 0
+
+set fmri(tagfirst) 1
+
+set fmri(multiple) 1
+
+set fmri(inputtype) 1
+
+set fmri(filtering_yn) 1
+
+set fmri(brain_thresh) 10
+
+set fmri(critical_z) 5.3
+
+set fmri(noise) 0.66
+
+set fmri(noisear) 0.34
+
+set fmri(newdir_yn) 0
+
+set fmri(mc) 1
+
+set fmri(sh_yn) 0
+
+set fmri(regunwarp_yn) 0
+
+set fmri(dwell) 0.7
+
+set fmri(te) 35
+
+set fmri(signallossthresh) 10
+
+set fmri(unwarp_dir) y-
+
+set fmri(st) 0
+
+set fmri(st_file) ""
+
+set fmri(bet_yn) 1
+
+set fmri(smooth) 6.0
+
+set fmri(norm_yn) 0
+
+set fmri(perfsub_yn) 0
+
+set fmri(temphp_yn) 1
+
+set fmri(templp_yn) 0
+
+set fmri(melodic_yn) 0
+
+set fmri(stats_yn) 1
+
+set fmri(prewhiten_yn) 1
+
+set fmri(motionevs) 2
+set fmri(motionevsbeta) ""
+set fmri(scriptevsbeta) ""
+
+set fmri(robust_yn) 0
+
+set fmri(mixed_yn) 2
+
+set fmri(evs_orig) 4
+set fmri(evs_real) 5
+set fmri(evs_vox) 0
+
+set fmri(ncon_orig) 7
+set fmri(ncon_real) 7
+
+set fmri(nftests_orig) 1
+set fmri(nftests_real) 1
+
+set fmri(constcol) 0
+
+set fmri(poststats_yn) 1
+
+set fmri(threshmask) ""
+
+set fmri(thresh) 0
+
+set fmri(prob_thresh) 0.05
+
+set fmri(z_thresh) 2.3
+
+set fmri(zdisplay) 0
+
+set fmri(zmin) 2
+
+set fmri(zmax) 8
+
+set fmri(rendertype) 1
+
+set fmri(bgimage) 1
+
+set fmri(tsplot_yn) 0
+
+set fmri(reg_yn) 0
+
+set fmri(reginitial_highres_yn) 0
+
+set fmri(reginitial_highres_search) 90
+
+set fmri(reginitial_highres_dof) 3
+
+set fmri(reghighres_yn) 0
+
+set fmri(reghighres_search) 90
+
+set fmri(reghighres_dof) BBR
+
+set fmri(regstandard_yn) 0
+
+set fmri(alternateReference_yn) 0
+
+set fmri(regstandard)
+
+set fmri(regstandard_search) 90
+
+set fmri(regstandard_dof) 12
+
+set fmri(regstandard_nonlinear_yn) 0
+
+set fmri(regstandard_nonlinear_warpres) 10 
+
+set fmri(paradigm_hp) 100
+
+set fmri(ncopeinputs) 0
+
+set feat_files(1)
+
+set fmri(confoundevs) 0
+
+set fmri(alternative_example_func) ""
+
+set fmri(alternative_mask) ""
+
+set fmri(init_initial_highres) ""
+
+set fmri(init_highres) ""
+
+set fmri(init_standard) ""
+
+set fmri(overwrite_yn) 0

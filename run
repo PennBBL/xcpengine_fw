@@ -20,6 +20,8 @@ IMG=$INPUT_DIR/img
 M0=$INPUT_DIR/m0
 STRUCT=$INPUT_DIR/antsct
 DESIGNFILE=$INPUT_DIR/designfile
+EVENTFILE=$INPUT_DIR/eventfile
+CONTRAST=$INPUT_DIR/contrast
 
 
 ################################################################################
@@ -34,6 +36,7 @@ echo -e "$CONTAINER END XCPENGINE DOCKERFILE \n"
 # CONFIGURE ENV
 
 source ${FLYWHEEL_BASE}/docker-env.sh
+
 
 
 ##############################################################################
@@ -85,15 +88,45 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
   unzip -q ${fmriprepout} -d $XCP_OUTPUT_DIR/fmriprep
   rm -rf ${cohortfile}  
   echo id0,id1,id2,id3,img > ${cohortfile} # 3 ids for now 
-  im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*desc-preproc_bold.nii.gz 2>/dev/null)
-  base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
-  base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*))
+  if [ $task_name == " " ]; then 
+     im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*desc-preproc_bold.nii.gz 2>/dev/null)
+     base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
+     base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*))
      for i in  $im
          do
          id0=$(echo $i |cut -d'_' -f3)
          id1=$(echo $i |cut -d'_' -f4)
          echo $base1,$base2,$id0,$id1,$i >> $cohortfile
-      done
+     done
+    else
+    im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*${task_name}*desc-preproc_bold.nii.gz 2>/dev/null)
+    
+    eventfile=$(ls -f $EVENTFILE/*txt)
+       if [ -f $(ls -f $CONTRAST/*json 2>/dev/null) ]; then 
+          contrast=$(ls -f $CONTRAST/*json )
+          cp $FLYWHEEL_BASE/template.fsf  $XCP_OUTPUT_DIR/template.fsf
+          trep=$(3dinfo -tr  ${im} )
+          python ${FLYWHEEL_BASE}/generate_taskfsfmodel.py -t ${XCP_OUTPUT_DIR}/template.fsf -r $trep -c $contrast -o $XCP_OUTPUT_DIR -e $eventfile
+         id0=$(echo $im |cut -d'_' -f3)
+         id1=$(echo $im |cut -d'_' -f4)
+         base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
+         base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*))
+         rm -rf  $cohortfile 
+         echo id0,id1,id2,id3,img,task_design > $cohortfile
+         echo $base1,$base2,$id0,$id1,$im,$XCP_OUTPUT_DIR/template.fsf >> $cohortfile
+        else 
+          trep=$(3dinfo -tr  ${im} )
+          python $FLYWHEEL_BASE/generate_taskfsfmodel.py  -r $trep -e $eventfile -o $XCP_OUTPUT_DIR 
+         id0=$(echo $im |cut -d'_' -f3)
+         id1=$(echo $im |cut -d'_' -f4)
+         base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
+         base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*))
+         rm -rf  $cohortfile 
+         echo id0,id1,id2,id3,img,confound2_custom > $cohortfile
+         echo $base1,$base2,$id0,$id1,$im,$XCP_OUTPUT_DIR/taskhrfconvolved.txt >> $cohortfile
+      fi
+
+  fi
 fi
 
 

@@ -5,7 +5,7 @@
 FROM pennbbl/xcpengine:latest
 
 MAINTAINER Ted Satterthwaite <sattertt@upenn.edu>
-
+ENV DEBIAN_FRONTEND noninteractive
 ENV XCPENGINE_VERSION 1.0 
 RUN apt-get update && apt-get -y install \
   jq \
@@ -15,11 +15,7 @@ RUN apt-get update && apt-get -y install \
 
 ############################
 # Install the Flywheel SDK
-RUN pip install flywheel-sdk
-
-############################
-# Install the Flywheel BIDS client
-RUN pip install flywheel_bids
+RUN pip install flywheel-sdk numpy pandas scipy
 
 ############################
 # Make directory for flywheel spec (v0)
@@ -27,8 +23,8 @@ ENV FLYWHEEL /flywheel/v0
 RUN mkdir -p ${FLYWHEEL}
 COPY run ${FLYWHEEL}/run
 COPY manifest.json ${FLYWHEEL}/manifest.json
-
-# Set the entrypoint
+COPY generate_taskfsfmodel.py ${FLYWHEEL}/generate_taskfsfmodel.py
+COPY template.fsf ${FLYWHEEL}/template.fsf
 ENTRYPOINT ["/flywheel/v0/run"]
 ADD https://raw.githubusercontent.com/PennBBL/xcpEngine/master/Dockerfile  ${FLYWHEEL}/xcpemgine_${XCPENGINE_VERSION}_Dockerfile
 RUN chmod +x ${FLYWHEEL}/*
