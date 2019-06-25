@@ -49,7 +49,7 @@ if [[ -f $CONFIG_FILE ]]; then
   echo "$(set | grep FW_INPUT)"
 fi
 
-
+jq1=$XCPEDIR/thirdparty/jq/jq-linux64
 
 function parse_config {
 
@@ -57,16 +57,17 @@ function parse_config {
   MANIFEST_FILE=$FLYWHEEL_BASE/manifest.json
 
   if [[ -f $CONFIG_FILE ]]; then
-    echo "$(cat $CONFIG_FILE | /usr/bin/jq -r '.config.'$1)"
+    echo "$(cat $CONFIG_FILE | $jq1 -r '.config.'$1)"
   else
     CONFIG_FILE=$MANIFEST_FILE
-    echo "$(cat $MANIFEST_FILE | /usr/bin/jq -r '.config.'$1'.default')"
+    echo "$(cat $CONFIG_FILE | $jq1 -r '.config.'$1'.default')"
   fi
 }
 
 analysis_type="$(parse_config 'analysis_type')"
 task_name="$(parse_config 'task_name')"
-
+echo $analysis_type
+echo $task_name
 # task name to be work on 
 
 ################################################################################
@@ -88,7 +89,7 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
   unzip -q ${fmriprepout} -d $XCP_OUTPUT_DIR/fmriprep
   rm -rf ${cohortfile}  
   echo id0,id1,id2,id3,img > ${cohortfile} # 3 ids for now 
-  if [ -z  $task_name ]; then 
+  if [[ -z  $task_name ]]; then 
      im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*desc-preproc_bold.nii.gz 2>/dev/null)
      base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
      base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*))
