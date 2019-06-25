@@ -181,7 +181,7 @@ zip -r -q ${XCP_OUTPUT_DIR}/xcpEngineouput_${analysis_type}.zip xcpengine
 rm -rf $XCP_OUTPUT_DIR/xcpengine
 
 
-XCPENGINE_EXITSTATUS=$?
+XCPENGINE_EXITSTATUS=0
 
 
 ################################################################################
