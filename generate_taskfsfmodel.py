@@ -12,7 +12,7 @@ from scipy.stats import gamma
 def get_parser():
     parser = ArgumentParser(
         formatter_class=RawTextHelpFormatter,
-        description=' write the report for xcpEngine ')
+        description=' generate design.fsf and hrfconvolved  matrix')
     parser.add_argument(
         '-e', '--eventfile', action='store', required=True,
         help='event file')
@@ -27,7 +27,7 @@ def get_parser():
         help='contrasts list in json file')
     parser.add_argument(
         '-t', '--template', action='store', required=False,
-        help=' upper part of FSL design template')
+        help='  FSL design template')
     
     return parser
 opts            =   get_parser().parse_args()

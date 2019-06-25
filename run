@@ -57,10 +57,10 @@ function parse_config {
   MANIFEST_FILE=$FLYWHEEL_BASE/manifest.json
 
   if [[ -f $CONFIG_FILE ]]; then
-    echo "$(cat $CONFIG_FILE | jq -r '.config.'$1)"
+    echo "$(cat $CONFIG_FILE | /usr/bin/jq -r '.config.'$1)"
   else
     CONFIG_FILE=$MANIFEST_FILE
-    echo "$(cat $MANIFEST_FILE | jq -r '.config.'$1'.default')"
+    echo "$(cat $MANIFEST_FILE | /usr/bin/jq -r '.config.'$1'.default')"
   fi
 }
 
@@ -88,7 +88,7 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
   unzip -q ${fmriprepout} -d $XCP_OUTPUT_DIR/fmriprep
   rm -rf ${cohortfile}  
   echo id0,id1,id2,id3,img > ${cohortfile} # 3 ids for now 
-  if [ $task_name == " " ]; then 
+  if [ -z  $task_name ]; then 
      im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*desc-preproc_bold.nii.gz 2>/dev/null)
      base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
      base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*))
@@ -102,7 +102,7 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
     im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*${task_name}*desc-preproc_bold.nii.gz 2>/dev/null)
     
     eventfile=$(ls -f $EVENTFILE/*txt)
-       if [ -f $(ls -f $CONTRAST/*json 2>/dev/null) ]; then 
+       if [[ -f $(ls -f $CONTRAST/*json 2>/dev/null) ]]; then 
           contrast=$(ls -f $CONTRAST/*json )
           cp $FLYWHEEL_BASE/template.fsf  $XCP_OUTPUT_DIR/template.fsf
           trep=$(3dinfo -tr  ${im} )
@@ -114,7 +114,7 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
          rm -rf  $cohortfile 
          echo id0,id1,id2,id3,img,task_design > $cohortfile
          echo $base1,$base2,$id0,$id1,$im,$XCP_OUTPUT_DIR/template.fsf >> $cohortfile
-        else 
+       else 
           trep=$(3dinfo -tr  ${im} )
           python $FLYWHEEL_BASE/generate_taskfsfmodel.py  -r $trep -e $eventfile -o $XCP_OUTPUT_DIR 
          id0=$(echo $im |cut -d'_' -f3)
@@ -199,4 +199,4 @@ cd "$GEAR_OUTPUT_DIR"
 # Clean up
 rm -rf "$WORKING_DIR"
 
-exit XCPENGINE_EXITSTATUS
+exit $XCPENGINE_EXITSTATUS
