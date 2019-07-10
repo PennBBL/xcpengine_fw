@@ -43,13 +43,14 @@ source ${FLYWHEEL_BASE}/docker-env.sh
 # Parse configuration
 
    # get the inputs files
+jq1=$XCPEDIR/thirdparty/jq/jq-linux64
 
 if [[ -f $CONFIG_FILE ]]; then
-  eval $(jq -r '.inputs | to_entries[] | "XCP_INPUT_\(.key)=\(.value.location.path)"' $CONFIG_FILE)
-  echo "$(set | grep FW_INPUT)"
+  eval $($jq1 -r '.inputs | to_entries[] | "XCP_INPUT_\(.key)=\(.value.location.path)"' $CONFIG_FILE)
+  echo "$(set | grep XCP_INPUT)"
 fi
 
-jq1=$XCPEDIR/thirdparty/jq/jq-linux64
+
 
 function parse_config {
 
