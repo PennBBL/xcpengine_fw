@@ -3,9 +3,12 @@
 # emacs: -*- mode: python; py-indent-offset: 4; indent-tabs-mode: nil -*-
 # vi: set ft=python sts=4 ts=4 sw=4 et:
 
+
+#AZEEZ ADEBIMPE PENN BBL
+
 from argparse import (ArgumentParser, RawTextHelpFormatter)
-import json 
-import numpy as np 
+import json
+import numpy as np
 import pandas as pd
 from scipy.stats import gamma
 
@@ -28,14 +31,14 @@ def get_parser():
     parser.add_argument(
         '-t', '--template', action='store', required=False,
         help='  FSL design template')
-    
+
     return parser
 opts            =   get_parser().parse_args()
 
 # read the task contrast
 
 t_rep=np.asarray(opts.tr, dtype='float64')
-#read the event time 
+#read the event time
 events=pd.read_csv(opts.eventfile,sep='\t')
 columnname=events.columns
 eventtime=events.as_matrix()
@@ -57,7 +60,7 @@ def hrf(times):
 hrf_times = np.arange(0, 35, t_rep)
 hrf_signal = hrf(hrf_times)
 N=len(hrf_signal)-1 #number to remove
-#convole the stimulus timing with the task 
+#convole the stimulus timing with the task
 # may be used for taskregressed
 taskcon=np.zeros(eventtime.shape)
 
@@ -70,13 +73,13 @@ np.savetxt(opts.out+'taskhrfconvolved.txt', taskcon, delimiter=' ')
 
 if opts.contrast:
     contrast=opts.contrast
-    with open(contrast, 'r') as contrastfile: 
+    with open(contrast, 'r') as contrastfile:
          data_contrast=contrastfile.read()
     objcont=json.loads(data_contrast)
     tasklist=list(objcont.keys())
     weight=list(objcont.values())
     template1=opts.template
-    filex = open(template1,"a") #append mode 
+    filex = open(template1,"a") #append mode
     tevenr="set "+"fmri(evs_real)" + " " + str(eventtime.shape[1]) + "\n"
     teveno="set "+"fmri(evs_orig)" + " " + str(eventtime.shape[1]) + "\n"
     evvox="set "+"fmri(evs_vox)" + " " + str(0) + "\n"
@@ -100,9 +103,9 @@ if opts.contrast:
         orhtho="set "+"fmri(ortho"+str(c)+"."+str(0)+")" + " " + str(0) + "\n"
         conphase="set "+"fmri(convolve_phase"+str(c)+")" + " " + str(0) + "\n"
         derivey="set "+"fmri(deriv_yn"+str(c)+")" + " " + str(0) + "\n"
-        filex.write(eventt) 
-        filex.write(eventshape) 
-        filex.write(eventtemp) 
+        filex.write(eventt)
+        filex.write(eventshape)
+        filex.write(eventtemp)
         filex.write(eventcustom)
         filex.write(eventconv)
         filex.write(orhtho)
@@ -133,7 +136,7 @@ if opts.contrast:
             ftesto="set " +"fmri(ftest_orig"+str(1)+"."+str(c)+")"+ " " + str(1) + "\n"
             filex.write(ftestr)
             filex.write(ftesto)
-        else: 
+        else:
             ftestr="set " +"fmri(ftest_real"+str(1)+"."+str(c)+")"+ " " + str(0) + "\n"
             ftesto="set " +"fmri(ftest_orig"+str(1)+"."+str(c)+")"+ " " + str(0) + "\n"
             filex.write(ftestr)
