@@ -87,7 +87,7 @@
 	"url": "https://xcpengine.readthedocs.io/",
 	"custom": {
 		"flywheel": {
-			"suite": "PennBBL"
+			"suite": "Runs on HPC"
 		},
 		"gear-builder": {
 			"category": "analysis",
