@@ -48,31 +48,6 @@
 			"description": " analysis type: [fc,struc,task,cbf]",
 			"type": "string"
 		},
-		"sge-cpu": {
-			"default": "2",
-			"description": "[SGE] How many cores to request. This is used for the underlying '-pe threaded' option.",
-			"type": "string"
-		},
-		"sge-ram": {
-			"default": "32G",
-			"description": "[SGE] How much RAM to request. This is used for the underlying '-l h_vmem' option.",
-			"type": "string"
-		},
-		"sge-short": {
-			"default": false,
-			"description": "[SGE] Tell the cluster this is a short job. This caps the job to 90 minutes wall-clock and 15 minutes of CPU.",
-			"type": "boolean"
-		},
-		"singularity-debug": {
-			"default": false,
-			"description": "[Singularity] Enable verbose logging.",
-			"type": "boolean"
-		},
-		"singularity-writable": {
-			"default": false,
-			"description": "[Singularity] Mount the container as writable.",
-			"type": "boolean"
-		},
 		"task_name": {
 			"default": "",
 			"description": " name of the task to perform either task regression or task ",
