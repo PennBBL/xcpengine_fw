@@ -31,6 +31,7 @@ RUN mkdir -p ${FLYWHEEL}
 COPY run ${FLYWHEEL}/run
 COPY manifest.json ${FLYWHEEL}/manifest.json
 COPY generate_taskfsfmodel.py ${FLYWHEEL}/generate_taskfsfmodel.py 
+COPY taskfslmodel.py ${FLYWHEEL}/taskfslmodel.py 
 COPY template.fsf ${FLYWHEEL}/template.fsf
 ENTRYPOINT ["/flywheel/v0/run"]
 ADD https://raw.githubusercontent.com/PennBBL/xcpEngine/master/Dockerfile  ${FLYWHEEL}/xcpengine_${XCPENGINE_VERSION}_Dockerfile

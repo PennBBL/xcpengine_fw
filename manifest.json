@@ -12,23 +12,23 @@
 		"api_key": {
 			"base": "api-key"
 		},
-		"contrast": {
-			"base": "file",
-			"description": " json file of contrasts",
-			"optional": true
-		},
 		"designfile": {
 			"base": "file",
 			"description": "designfile: list all modules to run"
 		},
-		"eventfile": {
+		"taskfile": {
 			"base": "file",
-			"description": "event times files ",
+			"description": "eventtimes files with json  ",
 			"optional": true
 		},
 		"fmriprepdir": {
 			"base": "file",
 			"description": "FMRIprep output directory",
+			"optional": true
+		},
+		"custom_regressors": {
+			"base": "file",
+			"description": "custom regressors already convolved with hrf",
 			"optional": true
 		},
 		"img": {
