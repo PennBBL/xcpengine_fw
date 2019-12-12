@@ -189,7 +189,7 @@ rm -rf $XCP_OUTPUT_DIR/fmriprep
 cd  $XCP_OUTPUT_DIR/ 
 zip -r -q ${XCP_OUTPUT_DIR}/xcpEngineouput_${analysis_type}.zip xcpengine
 rm -rf $XCP_OUTPUT_DIR/xcpengine
-
+rm -rf ${TASKFILE}
 
 XCPENGINE_EXITSTATUS=0
 
