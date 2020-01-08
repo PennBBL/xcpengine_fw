@@ -2,7 +2,7 @@
 	"name": "xcpengine-fw",
 		"label":  "XCPENGINE: pipeline for processing of  structural and functional data.",
 		"description": " The XCP imaging pipeline (XCP system) for  preprocessing of structural and functional data.",
-		"version": "1.06400",
+		"version": "1.06405",
 	"inputs": {
 		"antsct": {
 			"base": "file",
@@ -12,23 +12,23 @@
 		"api_key": {
 			"base": "api-key"
 		},
-		"contrast": {
-			"base": "file",
-			"description": " json file of contrasts",
-			"optional": true
-		},
 		"designfile": {
 			"base": "file",
 			"description": "designfile: list all modules to run"
 		},
-		"eventfile": {
+		"taskfile": {
 			"base": "file",
-			"description": "event times files ",
+			"description": "eventtimes files with json  ",
 			"optional": true
 		},
 		"fmriprepdir": {
 			"base": "file",
 			"description": "FMRIprep output directory",
+			"optional": true
+		},
+		"custom_regressors": {
+			"base": "file",
+			"description": "custom regressors already convolved with hrf",
 			"optional": true
 		},
 		"img": {
@@ -47,31 +47,6 @@
 			"default": "xcp",
 			"description": " analysis type: [fc,struc,task,cbf]",
 			"type": "string"
-		},
-		"sge-cpu": {
-			"default": "2",
-			"description": "[SGE] How many cores to request. This is used for the underlying '-pe threaded' option.",
-			"type": "string"
-		},
-		"sge-ram": {
-			"default": "32G",
-			"description": "[SGE] How much RAM to request. This is used for the underlying '-l h_vmem' option.",
-			"type": "string"
-		},
-		"sge-short": {
-			"default": false,
-			"description": "[SGE] Tell the cluster this is a short job. This caps the job to 90 minutes wall-clock and 15 minutes of CPU.",
-			"type": "boolean"
-		},
-		"singularity-debug": {
-			"default": false,
-			"description": "[Singularity] Enable verbose logging.",
-			"type": "boolean"
-		},
-		"singularity-writable": {
-			"default": false,
-			"description": "[Singularity] Mount the container as writable.",
-			"type": "boolean"
 		},
 		"task_name": {
 			"default": "",

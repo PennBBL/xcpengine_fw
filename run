@@ -20,8 +20,8 @@ IMG=$INPUT_DIR/img
 M0=$INPUT_DIR/m0
 STRUCT=$INPUT_DIR/antsct
 DESIGNFILE=$INPUT_DIR/designfile
-EVENTFILE=$INPUT_DIR/eventfile
-CONTRAST=$INPUT_DIR/contrast
+CUSTOM_REGRESSORS=$INPUT_DIR/custom_regressors
+TASKFILE=$INPUT_DIR/taskfile
 
 
 ################################################################################
@@ -67,8 +67,15 @@ function parse_config {
 
 analysis_type="$(parse_config 'analysis_type')"
 task_name="$(parse_config 'task_name')"
+
+apikey=$( cat ${FLYWHEEL_BASE}/config.json | $jq1 -r '.inputs.api_key.key')
+destinationid=$( cat ${FLYWHEEL_BASE}/config.json  | $jq1 -r '.destination.id')
+
+subjlabel=$( python -c "import flywheel; fw=flywheel.Client('${apikey}'); b=fw.get('${destinationid}'); print(fw.get(b.parents.subject).label)")
+
 echo $analysis_type
 echo $task_name
+echo $subjlabel
 # task name to be work on 
 
 ################################################################################
@@ -103,12 +110,14 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
     else
     im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*${task_name}*desc-preproc_bold.nii.gz 2>/dev/null)
     
-    eventfile=$(ls -f $EVENTFILE/*txt)
-       if [[ -f $(ls -f $CONTRAST/*json 2>/dev/null) ]]; then 
-          contrast=$(ls -f $CONTRAST/*json )
+    taskfile=$(ls -f $TASKFILE/*zip 2>/dev/null)
+    mkdir -p $XCP_OUTPUT_DIR/taskfile
+    unzip -q ${taskfile} -d $XCP_OUTPUT_DIR/taskfile/
+    mv $XCP_OUTPUT_DIR/taskfile/*/* $XCP_OUTPUT_DIR/taskfile/
+
+       if [[ -f $(ls -f $XCP_OUTPUT_DIR/taskfile/*json 2>/dev/null) ]]; then 
           cp $FLYWHEEL_BASE/template.fsf  $XCP_OUTPUT_DIR/template.fsf
-          trep=$(3dinfo -tr  ${im} )
-          python ${FLYWHEEL_BASE}/generate_taskfsfmodel.py -t ${XCP_OUTPUT_DIR}/template.fsf -r $trep -c $contrast -o $XCP_OUTPUT_DIR -e $eventfile
+          python ${FLYWHEEL_BASE}/taskfslmodel.py  -t ${XCP_OUTPUT_DIR}/template.fsf  -f  $XCP_OUTPUT_DIR/taskfile
          id0=$(echo $im |cut -d'_' -f3)
          id1=$(echo $im |cut -d'_' -f4)
          base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
@@ -116,16 +125,15 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
          rm -rf  $cohortfile 
          echo id0,id1,id2,id3,img,task_design > $cohortfile
          echo $base1,$base2,$id0,$id1,$im,$XCP_OUTPUT_DIR/template.fsf >> $cohortfile
-       else 
-          trep=$(3dinfo -tr  ${im} )
-          python $FLYWHEEL_BASE/generate_taskfsfmodel.py  -r $trep -e $eventfile -o $XCP_OUTPUT_DIR 
+       elif [[ -f $(ls -f ${CUSTOM_REGRESSORS}/*txt 2>/dev/null) ]]; then 
+         custom_reg=$(ls -f ${CUSTOM_REGRESSORS}/*txt)
          id0=$(echo $im |cut -d'_' -f3)
          id1=$(echo $im |cut -d'_' -f4)
          base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
          base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*))
          rm -rf  $cohortfile 
          echo id0,id1,id2,id3,img,confound2_custom > $cohortfile
-         echo $base1,$base2,$id0,$id1,$im,$XCP_OUTPUT_DIR/taskhrfconvolved.txt >> $cohortfile
+         echo $base1,$base2,$id0,$id1,$im,${custom_reg} >> $cohortfile
       fi
 
   fi
@@ -140,7 +148,7 @@ if  [[ -f $(ls -f ${IMG}/*nii.gz 2>/dev/null )  ]]; then
       rm -rf ${cohortfile}
       echo "\n"
       echo id0,img,anatdir > $cohortfile
-      echo sub,${img},${anatdir} >> $cohortfile  
+      echo sub-${subjlabel},${img},${anatdir} >> $cohortfile  
               if [[ -f $(ls -f ${M0}/*nii.gz 2>/dev/null )  ]]; then
                   m0=$(ls -f ${M0}/*nii.gz )
                   rm -rf ${cohortfile}
@@ -153,7 +161,7 @@ if  [[ -f $(ls -f ${IMG}/*nii.gz 2>/dev/null )  ]]; then
           unzip  -q ${anat} -d $XCP_OUTPUT_DIR/antsct
           antsctdir=$(ls -d $XCP_OUTPUT_DIR/antsct/xcpengine/*/struc)
           echo id0,img,antsct > $cohortfile
-          echo sub,${img},${antsctdir} >> $cohortfile
+          echo sub-${subjlabel},${img},${antsctdir} >> $cohortfile
             if [[ -f $(ls -f ${M0}/*nii.gz) ]]; then
                   m0=$(ls -f ${M0}/*nii.gz )
                   rm -rf ${cohortfile}
@@ -163,7 +171,7 @@ if  [[ -f $(ls -f ${IMG}/*nii.gz 2>/dev/null )  ]]; then
       else 
        rm -rf ${cohortfile}
        echo id0,img > $cohortfile
-       echo sub,${img} >> $cohortfile
+       echo sub-${subjlabel},${img} >> $cohortfile
       fi
 fi
 
@@ -181,7 +189,8 @@ rm -rf $XCP_OUTPUT_DIR/fmriprep
 cd  $XCP_OUTPUT_DIR/ 
 zip -r -q ${XCP_OUTPUT_DIR}/xcpEngineouput_${analysis_type}.zip xcpengine
 rm -rf $XCP_OUTPUT_DIR/xcpengine
-
+rm -rf ${TASKFILE}
+rm -rf $XCP_OUTPUT_DIR/*txt $XCP_OUTPUT_DIR/*json 
 
 XCPENGINE_EXITSTATUS=0
 

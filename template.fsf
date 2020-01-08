@@ -39,7 +39,7 @@ set fmri(noisear) 0.34
 
 set fmri(newdir_yn) 0
 
-set fmri(mc) 1
+set fmri(mc) 0
 
 set fmri(sh_yn) 0
 
@@ -75,7 +75,7 @@ set fmri(stats_yn) 1
 
 set fmri(prewhiten_yn) 1
 
-set fmri(motionevs) 2
+set fmri(motionevs) 1
 set fmri(motionevsbeta) ""
 set fmri(scriptevsbeta) ""
 
@@ -151,7 +151,7 @@ set fmri(ncopeinputs) 0
 
 set feat_files(1)
 
-set fmri(confoundevs) 0
+set fmri(confoundevs) 1
 
 set fmri(alternative_example_func) ""
 
