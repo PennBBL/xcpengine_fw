@@ -1,5 +1,5 @@
 {
-	"name": "xcpengine-fw",
+	"name": "xcpengine-fw-hpc",
 		"label":  "XCPENGINE: pipeline for processing of  structural and functional data.",
 		"description": " The XCP imaging pipeline (XCP system) for  preprocessing of structural and functional data.",
 		"version": "1.06405",
