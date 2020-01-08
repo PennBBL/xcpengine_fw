@@ -66,7 +66,7 @@
 		},
 		"gear-builder": {
 			"category": "analysis",
-			"image": "pennbbl/xcpengine"
+			"image": "pennbbl/xcpengine:1.1rc2"
 		}
 	}
 }
