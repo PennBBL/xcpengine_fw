@@ -90,4 +90,14 @@ if contrast:
             ctorig="set " +"fmri(con_orig"+str(c)+"."+str(p)+")"+ " " + str(weight[i][j])+"\n"
             filex.write(ctreal)
             filex.write(ctorig)
+        if sum(weight[i]) == 1:
+            ftestr="set " +"fmri(ftest_real"+str(1)+"."+str(c)+")"+ " " + str(1) + "\n"
+            ftesto="set " +"fmri(ftest_orig"+str(1)+"."+str(c)+")"+ " " + str(1) + "\n"
+            filex.write(ftestr)
+            filex.write(ftesto)
+        else:
+            ftestr="set " +"fmri(ftest_real"+str(1)+"."+str(c)+")"+ " " + str(0) + "\n"
+            ftesto="set " +"fmri(ftest_orig"+str(1)+"."+str(c)+")"+ " " + str(0) + "\n"
+            filex.write(ftestr)
+            filex.write(ftesto)
     filex.close()
