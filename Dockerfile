@@ -22,7 +22,7 @@ RUN apt-get -y install \
   python-dev 
 RUN pip install flywheel-sdk numpy pandas scipy
 
-RUN apt-get -y install jq && apt-get update
+RUN apt-get -y install jq && apt-get update 
 ############################
 # Make directory for flywheel spec (v0)
 ENV FLYWHEEL /flywheel/v0
@@ -33,6 +33,7 @@ COPY manifest.json ${FLYWHEEL}/manifest.json
 COPY generate_taskfsfmodel.py ${FLYWHEEL}/generate_taskfsfmodel.py 
 COPY taskfslmodel.py ${FLYWHEEL}/taskfslmodel.py 
 COPY template.fsf ${FLYWHEEL}/template.fsf
+COPY create_archive_fw_heudiconv.py ${FLYWHEEL}/create_archive_fw_heudiconv.py 
 ENTRYPOINT ["/flywheel/v0/run"]
 ADD https://raw.githubusercontent.com/PennBBL/xcpEngine/master/Dockerfile  ${FLYWHEEL}/xcpengine_${XCPENGINE_VERSION}_Dockerfile
 RUN chmod +x ${FLYWHEEL}/*
