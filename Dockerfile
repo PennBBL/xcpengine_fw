@@ -2,7 +2,7 @@
 
 ############################
 # Get the xcpengine algorithm from DockerHub
-FROM pennbbl/xcpengine:latest
+FROM pennbbl/xcpengine:1.1.0
 
 MAINTAINER Ted Satterthwaite <sattertt@upenn.edu>
 ENV DEBIAN_FRONTEND noninteractive
