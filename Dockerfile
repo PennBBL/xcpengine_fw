@@ -6,7 +6,7 @@ FROM pennbbl/xcpengine:1.2.1
 
 MAINTAINER Ted Satterthwaite <sattertt@upenn.edu>
 ENV DEBIAN_FRONTEND noninteractive
-ENV XCPENGINE_VERSION 1.0 
+ENV XCPENGINE_VERSION 1.2.1 
 RUN apt-get update && apt-get -y install \
   jq \
   tar \
