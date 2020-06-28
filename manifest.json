@@ -2,7 +2,7 @@
 	"name": "xcpengine-fw",
 		"label":  "XCPENGINE: pipeline for processing of  structural and functional data.",
 		"description": " The XCP imaging pipeline (XCP system) for  preprocessing of structural and functional data.",
-		"version": "0.0.2_1.1.0",
+		"version": "0.0.3_1.2.1",
 	"inputs": {
 		"antsct": {
 			"base": "file",
@@ -51,6 +51,11 @@
 		"task_name": {
 			"default": "",
 			"description": " name of the task to perform either task regression or task ",
+			"type": "string"
+		},
+		"seission": {
+			"default": "",
+			"description": " task seission ",
 			"type": "string"
 		}
 	},
