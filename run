@@ -22,7 +22,7 @@ STRUCT=$INPUT_DIR/antsct
 DESIGNFILE=$INPUT_DIR/designfile
 CUSTOM_REGRESSORS=$INPUT_DIR/custom_regressors
 TASKFILE=$INPUT_DIR/taskfile
-
+BIDS_DIR=$GEAR_OUTPUT_DIR/bids_dataset
 
 ################################################################################
 # DISPLAY XCPENGINE DOCKERFILE FOR BUILD INFO
@@ -67,6 +67,7 @@ function parse_config {
 
 analysis_type="$(parse_config 'analysis_type')"
 task_name="$(parse_config 'task_name')"
+ses="$(parse_config 'seission')"
 
 apikey=$( cat ${FLYWHEEL_BASE}/config.json | $jq1 -r '.inputs.api_key.key')
 destinationid=$( cat ${FLYWHEEL_BASE}/config.json  | $jq1 -r '.destination.id')
@@ -75,6 +76,7 @@ subjlabel=$( python -c "import flywheel; fw=flywheel.Client('${apikey}'); b=fw.g
 
 echo $analysis_type
 echo $task_name
+echo $ses
 echo $subjlabel
 # task name to be work on 
 
@@ -91,7 +93,7 @@ cohortfile=${XCP_OUTPUT_DIR}/cohortfile.csv
 
 # check fmriprep directory
 if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then 
-  echo "FMRIPREP output is zip file and will be unzipped"
+  echo "unzip FMRIPREP"
   fmriprepout=$(ls -f $FMRIPREPDIR/*zip ) 
   mkdir -p $XCP_OUTPUT_DIR/fmriprep
   unzip -q ${fmriprepout} -d $XCP_OUTPUT_DIR/fmriprep
@@ -100,28 +102,29 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
   if [[ -z  $task_name ]]; then 
      im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*desc-preproc_bold.nii.gz 2>/dev/null)
      base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
-     base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*))
+     #base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*))
      for i in  $im
          do
          id0=$(echo $i |cut -d'_' -f3)
          id1=$(echo $i |cut -d'_' -f4)
-         echo $base1,$base2,$id0,$id1,$i >> $cohortfile
+         id3=$(basename $(dirname $(dirname $im)))
+         echo $base1,$id3,$id0,$id1,$i >> $cohortfile
      done
-    else
-    im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*${task_name}*desc-preproc_bold.nii.gz 2>/dev/null)
+  else
+     im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-${ses}/func/*${task_name}*desc-preproc_bold.nii.gz 2>/dev/null)
     
-    taskfile=$(ls -f $TASKFILE/*zip 2>/dev/null)
-    mkdir -p $XCP_OUTPUT_DIR/taskfile
-    unzip -q ${taskfile} -d $XCP_OUTPUT_DIR/taskfile/
-    mv $XCP_OUTPUT_DIR/taskfile/*/* $XCP_OUTPUT_DIR/taskfile/
+     taskfile=$(ls -f $TASKFILE/*zip 2>/dev/null)
+     mkdir -p $XCP_OUTPUT_DIR/taskfile
+     unzip -q ${taskfile} -d $XCP_OUTPUT_DIR/taskfile/
+     mv $XCP_OUTPUT_DIR/taskfile/*/* $XCP_OUTPUT_DIR/taskfile/
 
        if [[ -f $(ls -f $XCP_OUTPUT_DIR/taskfile/*json 2>/dev/null) ]]; then 
           cp $FLYWHEEL_BASE/template.fsf  $XCP_OUTPUT_DIR/template.fsf
-          python ${FLYWHEEL_BASE}/taskfslmodel.py  -t ${XCP_OUTPUT_DIR}/template.fsf  -f  $XCP_OUTPUT_DIR/taskfile
+         python ${FLYWHEEL_BASE}/taskfslmodel.py  -t ${XCP_OUTPUT_DIR}/template.fsf  -f  $XCP_OUTPUT_DIR/taskfile
          id0=$(echo $im |cut -d'_' -f3)
          id1=$(echo $im |cut -d'_' -f4)
          base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
-         base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*))
+         base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-${ses}))
          rm -rf  $cohortfile 
          echo id0,id1,id2,id3,img,task_design > $cohortfile
          echo $base1,$base2,$id0,$id1,$im,$XCP_OUTPUT_DIR/template.fsf >> $cohortfile
@@ -130,7 +133,7 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
          id0=$(echo $im |cut -d'_' -f3)
          id1=$(echo $im |cut -d'_' -f4)
          base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
-         base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*))
+         base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-${ses}))
          rm -rf  $cohortfile 
          echo id0,id1,id2,id3,img,confound2_custom > $cohortfile
          echo $base1,$base2,$id0,$id1,$im,${custom_reg} >> $cohortfile
@@ -144,34 +147,41 @@ if  [[ -f $(ls -f ${IMG}/*nii.gz 2>/dev/null )  ]]; then
       img=$(ls -f ${IMG}/*nii.gz)
       echo " Ensure appropriate design file is supplied \n"
       anatdir=$(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/anat/ 2>/dev/null )
+
+      # create bids directory to get fielmap directory if is there
+      python ${FLYWHEEL_BASE}/create_archive_fw_heudiconv.py
+      if [[ -d $(ls -d ${BIDS_DIR}/*/*/fmap )   ]]; then 
+         fmapdir=${BIDS_DIR}/*/*/fmap
+      fi 
+
       if [[ -d ${anatdir} ]]; then 
       rm -rf ${cohortfile}
       echo "\n"
-      echo id0,img,anatdir > $cohortfile
-      echo sub-${subjlabel},${img},${anatdir} >> $cohortfile  
+      echo id0,img,anatdir,dico_fmapdir > $cohortfile
+      echo sub-${subjlabel},${img},${anatdir},$fmapdir >> $cohortfile  
               if [[ -f $(ls -f ${M0}/*nii.gz 2>/dev/null )  ]]; then
                   m0=$(ls -f ${M0}/*nii.gz )
                   rm -rf ${cohortfile}
-                  echo id0,img,anatdir,m0 > $cohortfile
-                  echo sub,${mg},${anatdir},${m0}>> $cohortfile 
+                  echo id0,img,anatdir,m0,dico_fmapdir  > $cohortfile
+                  echo sub-${subjlabel},${mg},${anatdir},${m0},$fmapdir >> $cohortfile 
               fi
       elif [[ -f $(ls -f ${STRUCT}/*zip 2>/dev/null ) ]]; then 
           rm -rf ${cohortfile}
           anat=$(ls -f ${STRUCT}/*zip)
           unzip  -q ${anat} -d $XCP_OUTPUT_DIR/antsct
           antsctdir=$(ls -d $XCP_OUTPUT_DIR/antsct/xcpengine/*/struc)
-          echo id0,img,antsct > $cohortfile
-          echo sub-${subjlabel},${img},${antsctdir} >> $cohortfile
+          echo id0,img,antsct,dico_fmapdir > $cohortfile
+          echo sub-${subjlabel},${img},${antsctdir},$fmapdir  >> $cohortfile
             if [[ -f $(ls -f ${M0}/*nii.gz) ]]; then
                   m0=$(ls -f ${M0}/*nii.gz )
                   rm -rf ${cohortfile}
-                  echo id0,img,antsct > $cohortfile
-                  echo sub,${img},${antsctdir} >> $cohortfile
+                  echo id0,img,antsct,dico_fmapdir > $cohortfile
+                  echo sub-${subjlabel},${img},${antsctdir},$fmapdir >> $cohortfile
            fi
       else 
        rm -rf ${cohortfile}
-       echo id0,img > $cohortfile
-       echo sub-${subjlabel},${img} >> $cohortfile
+       echo id0,img,dico_fmapdir > $cohortfile
+       echo sub-${subjlabel},${img},$fmapdir  >> $cohortfile
       fi
 fi
 
@@ -191,6 +201,7 @@ zip -r -q ${XCP_OUTPUT_DIR}/xcpEngineouput_${analysis_type}.zip xcpengine
 rm -rf $XCP_OUTPUT_DIR/xcpengine
 rm -rf ${TASKFILE}
 rm -rf $XCP_OUTPUT_DIR/*txt $XCP_OUTPUT_DIR/*json 
+rm -rf $XCP_OUTPUT_DIR/taskfile
 
 XCPENGINE_EXITSTATUS=0
 
