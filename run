@@ -67,7 +67,7 @@ function parse_config {
 
 analysis_type="$(parse_config 'analysis_type')"
 task_name="$(parse_config 'task_name')"
-ses="$(parse_config 'seission')"
+ses="$(parse_config 'session')"
 
 apikey=$( cat ${FLYWHEEL_BASE}/config.json | $jq1 -r '.inputs.api_key.key')
 destinationid=$( cat ${FLYWHEEL_BASE}/config.json  | $jq1 -r '.destination.id')
