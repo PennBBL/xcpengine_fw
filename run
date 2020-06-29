@@ -107,7 +107,7 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
          do
          id0=$(echo $i |cut -d'_' -f3)
          id1=$(echo $i |cut -d'_' -f4)
-         id3=$(basename $(dirname $(dirname $im)))
+         id3=$(basename $(dirname $(dirname $i)))
          echo $base1,$id3,$id0,$id1,$i >> $cohortfile
      done
   else
