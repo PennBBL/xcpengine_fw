@@ -53,9 +53,9 @@
 			"description": " name of the task to perform either task regression or task ",
 			"type": "string"
 		},
-		"seission": {
+		"session": {
 			"default": "",
-			"description": " task seissiion ",
+			"description": " task sessiion ",
 			"type": "string"
 		}
 	},
