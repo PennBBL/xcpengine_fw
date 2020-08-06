@@ -2,7 +2,7 @@
 	"name": "xcpengine-fw-hpc",
 		"label":  "XCPENGINE: pipeline for processing of  structural and functional data.",
 		"description": " The XCP imaging pipeline (XCP system) for  preprocessing of structural and functional data.",
-		"version": "0.0.8_1.2.3",
+		"version": "0.0.9_1.2.3",
 	"inputs": {
 		"antsct": {
 			"base": "file",
@@ -71,7 +71,7 @@
 		},
 		"gear-builder": {
 			"category": "analysis",
-			"image": "pennbbl/xcpengine_fw:0.0.8_1.2.3"
+			"image": "pennbbl/xcpengine_fw:0.0.9_1.2.3"
 		}
 	}
 }
