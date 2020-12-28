@@ -84,20 +84,30 @@ if contrast:
         filex.write(ctname)
         filex.write(ctpdisplay)
         filex.write(conpic)
-        for j in np.arange(0,len(weight[1])):
-            p=j+1
-            ctreal="set " +"fmri(con_real"+str(c)+"."+str(p)+")"+ " " + str(weight[i][j])+"\n"
-            ctorig="set " +"fmri(con_orig"+str(c)+"."+str(p)+")"+ " " + str(weight[i][j])+"\n"
+        
+        if len(weight[0]) == 1: 
+            ctreal="set " +"fmri(con_real"+str(1)+"."+str(1)+")"+ " " + str(1)+"\n"
+            ctorig="set " +"fmri(con_orig"+str(1)+"."+str(1)+")"+ " " + str(1)+"\n"
+            nftr="set " +"fmri(nftests_orig) " + str(0)+"\n"
+            nftg="set " +"fmri(nftests_real) " + str(0)+"\n"
             filex.write(ctreal)
-            filex.write(ctorig)
-        if sum(weight[i]) == 1:
-            ftestr="set " +"fmri(ftest_real"+str(1)+"."+str(c)+")"+ " " + str(1) + "\n"
-            ftesto="set " +"fmri(ftest_orig"+str(1)+"."+str(c)+")"+ " " + str(1) + "\n"
-            filex.write(ftestr)
-            filex.write(ftesto)
+            filex.write(nftr)
+            filex.write(nftg)
         else:
-            ftestr="set " +"fmri(ftest_real"+str(1)+"."+str(c)+")"+ " " + str(0) + "\n"
-            ftesto="set " +"fmri(ftest_orig"+str(1)+"."+str(c)+")"+ " " + str(0) + "\n"
-            filex.write(ftestr)
-            filex.write(ftesto)
+            for j in np.arange(0,len(weight[1])):
+                p=j+1
+                ctreal="set " +"fmri(con_real"+str(c)+"."+str(p)+")"+ " " + str(weight[i][j])+"\n"
+                ctorig="set " +"fmri(con_orig"+str(c)+"."+str(p)+")"+ " " + str(weight[i][j])+"\n"
+                filex.write(ctreal)
+                filex.write(ctorig)
+            if sum(weight[i]) == 1:
+                ftestr="set " +"fmri(ftest_real"+str(1)+"."+str(c)+")"+ " " + str(1) + "\n"
+                ftesto="set " +"fmri(ftest_orig"+str(1)+"."+str(c)+")"+ " " + str(1) + "\n"
+                filex.write(ftestr)
+                filex.write(ftesto)
+            else:
+                ftestr="set " +"fmri(ftest_real"+str(1)+"."+str(c)+")"+ " " + str(0) + "\n"
+                ftesto="set " +"fmri(ftest_orig"+str(1)+"."+str(c)+")"+ " " + str(0) + "\n"
+                filex.write(ftestr)
+                filex.write(ftesto)
     filex.close()

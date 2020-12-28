@@ -2,11 +2,11 @@
 
 ############################
 # Get the xcpengine algorithm from DockerHub
-FROM pennbbl/xcpengine:1.2.1
+FROM pennbbl/xcpengine:1.2.3
 
 MAINTAINER Ted Satterthwaite <sattertt@upenn.edu>
 ENV DEBIAN_FRONTEND noninteractive
-ENV XCPENGINE_VERSION 1.2.1 
+ENV XCPENGINE_VERSION 1.2.3 
 RUN apt-get update && apt-get -y install \
   jq \
   tar \

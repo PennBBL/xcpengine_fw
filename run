@@ -24,6 +24,7 @@ CUSTOM_REGRESSORS=$INPUT_DIR/custom_regressors
 TASKFILE=$INPUT_DIR/taskfile
 BIDS_DIR=$GEAR_OUTPUT_DIR/bids_dataset
 
+
 ################################################################################
 # DISPLAY XCPENGINE DOCKERFILE FOR BUILD INFO
 
@@ -68,6 +69,7 @@ function parse_config {
 analysis_type="$(parse_config 'analysis_type')"
 task_name="$(parse_config 'task_name')"
 ses="$(parse_config 'session')"
+space="$(parse_config 'space')"
 
 apikey=$( cat ${FLYWHEEL_BASE}/config.json | $jq1 -r '.inputs.api_key.key')
 destinationid=$( cat ${FLYWHEEL_BASE}/config.json  | $jq1 -r '.destination.id')
@@ -100,7 +102,7 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
   rm -rf ${cohortfile}  
   echo id0,id1,id2,id3,img > ${cohortfile} # 3 ids for now 
   if [[ -z  $task_name ]]; then 
-     im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*/func/*desc-preproc_bold.nii.gz 2>/dev/null)
+     im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-${ses}/func/*${space}*desc-preproc_bold.nii.gz 2>/dev/null)
      base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
      #base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-*))
      for i in  $im
@@ -111,32 +113,45 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
          echo $base1,$id3,$id0,$id1,$i >> $cohortfile
      done
   else
-     im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-${ses}/func/*${task_name}*desc-preproc_bold.nii.gz 2>/dev/null)
-    
+     im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-${ses}/func/*${task_name}*${space}*_desc-preproc_bold.nii.gz 2>/dev/null)
+     trep=$(/opt/fsl-5.0.10/bin/fslval ${im} pixdim4)
      taskfile=$(ls -f $TASKFILE/*zip 2>/dev/null)
      mkdir -p $XCP_OUTPUT_DIR/taskfile
      unzip -q ${taskfile} -d $XCP_OUTPUT_DIR/taskfile/
      mv $XCP_OUTPUT_DIR/taskfile/*/* $XCP_OUTPUT_DIR/taskfile/
 
        if [[ -f $(ls -f $XCP_OUTPUT_DIR/taskfile/*json 2>/dev/null) ]]; then 
-          cp $FLYWHEEL_BASE/template.fsf  $XCP_OUTPUT_DIR/template.fsf
+        cp $FLYWHEEL_BASE/template.fsf  $XCP_OUTPUT_DIR/template.fsf
          python ${FLYWHEEL_BASE}/taskfslmodel.py  -t ${XCP_OUTPUT_DIR}/template.fsf  -f  $XCP_OUTPUT_DIR/taskfile
          id0=$(echo $im |cut -d'_' -f3)
          id1=$(echo $im |cut -d'_' -f4)
          base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
          base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-${ses}))
+         
+         /opt/fsl-5.0.10/bin/feat_model ${XCP_OUTPUT_DIR}/template 
+         python  ${FLYWHEEL_BASE}/generate_taskfsfmodel.py -r ${trep} -t ${XCP_OUTPUT_DIR}/template.mat -o ${XCP_OUTPUT_DIR}
          rm -rf  $cohortfile 
-         echo id0,id1,id2,id3,img,task_design > $cohortfile
-         echo $base1,$base2,$id0,$id1,$im,$XCP_OUTPUT_DIR/template.fsf >> $cohortfile
-       elif [[ -f $(ls -f ${CUSTOM_REGRESSORS}/*txt 2>/dev/null) ]]; then 
+         echo id0,id1,id2,id3,img,task_design,confound2_custom > $cohortfile
+         echo $base1,$base2,$id0,$id1,$im,$XCP_OUTPUT_DIR/template.fsf,${XCP_OUTPUT_DIR}/taskhrfconvolved.txt >> $cohortfile
+              if [[ -f $(ls -f ${CUSTOM_REGRESSORS}/*txt 2>/dev/null) ]]; then  #this will combine custom and task 
+                   custom_reg=$(ls -f ${CUSTOM_REGRESSORS}/*txt)
+                   python  ${FLYWHEEL_BASE}/generate_taskfsfmodel.py -r ${trep} -c ${custom_reg} -t ${XCP_OUTPUT_DIR}/template.mat -o ${XCP_OUTPUT_DIR}
+                   rm -rf  $cohortfile
+                   echo id0,id1,id2,id3,img,task_design,confound2_custom, > $cohortfile
+                   echo $base1,$base2,$id0,$id1,$im,$XCP_OUTPUT_DIR/template.fsf,${XCP_OUTPUT_DIR}/taskhrfconvolved.txt >> $cohortfile
+              fi
+
+       elif [[ -f $(ls -f ${CUSTOM_REGRESSORS}/*txt 2>/dev/null) ]] && [[ ! -f $(ls -f $XCP_OUTPUT_DIR/taskfile/*json 2>/dev/null) ]]; then 
          custom_reg=$(ls -f ${CUSTOM_REGRESSORS}/*txt)
          id0=$(echo $im |cut -d'_' -f3)
          id1=$(echo $im |cut -d'_' -f4)
          base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
          base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-${ses}))
-         rm -rf  $cohortfile 
-         echo id0,id1,id2,id3,img,confound2_custom > $cohortfile
-         echo $base1,$base2,$id0,$id1,$im,${custom_reg} >> $cohortfile
+         custom_reg=$(ls -f ${CUSTOM_REGRESSORS}/*txt)
+         python  ${FLYWHEEL_BASE}/generate_taskfsfmodel.py -r ${trep} -c ${custom_reg}  -o ${XCP_OUTPUT_DIR}
+         rm -rf  $cohortfile
+         echo id0,id1,id2,id3,img,confound2_custom, > $cohortfile
+        echo $base1,$base2,$id0,$id1,$im,${XCP_OUTPUT_DIR}/taskhrfconvolved.txt >> $cohortfile
       fi
 
   fi
@@ -193,15 +208,15 @@ time /xcpEngine/xcpEngine \
       -d  $designfile  \
       -c  $cohortfile  \
       -o  ${XCP_OUTPUT_DIR}/xcpengine \
-      -i  ${WORKING_DIR}
+      -i  ${WORKING_DIR} 
 
 rm -rf $XCP_OUTPUT_DIR/fmriprep
 cd  $XCP_OUTPUT_DIR/ 
 zip -r -q ${XCP_OUTPUT_DIR}/xcpEngineouput_${analysis_type}.zip xcpengine
-rm -rf $XCP_OUTPUT_DIR/xcpengine
-rm -rf ${TASKFILE}
-rm -rf $XCP_OUTPUT_DIR/*txt $XCP_OUTPUT_DIR/*json 
-rm -rf $XCP_OUTPUT_DIR/taskfile
+rm -rf $XCP_OUTPUT_DIR/xcpengine 2>/dev/null
+rm -rf ${TASKFILE} 2>/dev/null
+rm -rf $XCP_OUTPUT_DIR/*txt $XCP_OUTPUT_DIR/*json  2>/dev/null
+rm -rf $XCP_OUTPUT_DIR/taskfile 2>/dev/null 
 
 XCPENGINE_EXITSTATUS=0
 
@@ -210,7 +225,7 @@ XCPENGINE_EXITSTATUS=0
 # CLEANUP OUTPUTS
 
 
-echo "$CONTAINER  completed the execution. Check the log files for anyg errors."
+echo "$CONTAINER  completed the execution. Check the log files for anyg errors.".
 echo ' '
 echo ' cleaning the working directory'
 cd "$GEAR_OUTPUT_DIR"
@@ -222,3 +237,4 @@ cd "$GEAR_OUTPUT_DIR"
 rm -rf "$WORKING_DIR"
 
 exit $XCPENGINE_EXITSTATUS
+
