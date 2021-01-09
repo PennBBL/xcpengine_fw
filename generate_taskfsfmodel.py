@@ -35,7 +35,7 @@ opts            =   get_parser().parse_args()
 # read the task contrast
 
 t_rep=np.asarray(opts.tr, dtype='float64')
-
+taskconx=[]
 #read conlvolved task
 if opts.taskconv:
     taskconv=pd.read_csv(opts.taskconv,sep='\t',skiprows=5,header=None).to_numpy()
