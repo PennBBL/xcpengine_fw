@@ -9,6 +9,7 @@
 from argparse import (ArgumentParser, RawTextHelpFormatter)
 import json
 import numpy as np
+import nibabel as nb
 import pandas as pd
 from scipy.stats import gamma
 
@@ -20,8 +21,8 @@ def get_parser():
         '-o', '--out', action='store', required=True,
         help='outdir')
     parser.add_argument(
-        '-r', '--tr', action='store', required=True,
-        help='repetition time')
+        '-i', '--im', action='store', required=True,
+        help='niftiimage')
     parser.add_argument(
         '-c', '--customreg', action='store', required=False,
         help='custom regressors')
@@ -34,7 +35,10 @@ opts            =   get_parser().parse_args()
 
 # read the task contrast
 
-t_rep=np.asarray(opts.tr, dtype='float64')
+
+t_rep=nb.load(opts.im).header.get_zooms()[-1]
+t_rep=np.asarray(t_rep, dtype='float64')
+
 taskconx=[]
 #read conlvolved task
 if opts.taskconv:
