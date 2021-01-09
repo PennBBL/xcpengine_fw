@@ -98,7 +98,7 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
   echo "unzip FMRIPREP"
   fmriprepout=$(ls -f $FMRIPREPDIR/*zip ) 
   mkdir -p $XCP_OUTPUT_DIR/fmriprep
-  unzip -q ${fmriprepout} -d $XCP_OUTPUT_DIR/fmriprep
+  unzip -q ${fmriprepout} -d $XCP_OUTPUT_DIR/fmriprep 2>/dev/null
   rm -rf ${cohortfile}  
   echo id0,id1,id2,id3,img > ${cohortfile} # 3 ids for now 
   if [[ -z  $task_name ]]; then 
@@ -116,8 +116,8 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
      im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-${ses}/func/*${task_name}*${space}*_desc-preproc_bold.nii.gz 2>/dev/null)
      taskfile=$(ls -f $TASKFILE/*zip 2>/dev/null)
      mkdir -p $XCP_OUTPUT_DIR/taskfile
-     unzip -q ${taskfile} -d $XCP_OUTPUT_DIR/taskfile/
-     mv $XCP_OUTPUT_DIR/taskfile/*/* $XCP_OUTPUT_DIR/taskfile/
+     unzip -q ${taskfile} -d $XCP_OUTPUT_DIR/taskfile/ 2>/dev/null
+     mv $XCP_OUTPUT_DIR/taskfile/*/* $XCP_OUTPUT_DIR/taskfile/ 2>/dev/null
 
        if [[ -f $(ls -f $XCP_OUTPUT_DIR/taskfile/*json 2>/dev/null) ]]; then 
         cp $FLYWHEEL_BASE/template.fsf  $XCP_OUTPUT_DIR/template.fsf
