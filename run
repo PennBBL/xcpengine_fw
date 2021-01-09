@@ -114,7 +114,6 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
      done
   else
      im=$(ls -f $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-${ses}/func/*${task_name}*${space}*_desc-preproc_bold.nii.gz 2>/dev/null)
-     trep=$(/opt/fsl-5.0.10/bin/fslval ${im} pixdim4)
      taskfile=$(ls -f $TASKFILE/*zip 2>/dev/null)
      mkdir -p $XCP_OUTPUT_DIR/taskfile
      unzip -q ${taskfile} -d $XCP_OUTPUT_DIR/taskfile/
@@ -129,13 +128,13 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
          base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-${ses}))
          
          /opt/fsl-5.0.10/bin/feat_model ${XCP_OUTPUT_DIR}/template 
-         python  ${FLYWHEEL_BASE}/generate_taskfsfmodel.py -r ${trep} -t ${XCP_OUTPUT_DIR}/template.mat -o ${XCP_OUTPUT_DIR}
+         python  ${FLYWHEEL_BASE}/generate_taskfsfmodel.py -i ${im} -t ${XCP_OUTPUT_DIR}/template.mat -o ${XCP_OUTPUT_DIR}
          rm -rf  $cohortfile 
          echo id0,id1,id2,id3,img,task_design,confound2_custom > $cohortfile
          echo $base1,$base2,$id0,$id1,$im,$XCP_OUTPUT_DIR/template.fsf,${XCP_OUTPUT_DIR}/taskhrfconvolved.txt >> $cohortfile
               if [[ -f $(ls -f ${CUSTOM_REGRESSORS}/*txt 2>/dev/null) ]]; then  #this will combine custom and task 
                    custom_reg=$(ls -f ${CUSTOM_REGRESSORS}/*txt)
-                   python  ${FLYWHEEL_BASE}/generate_taskfsfmodel.py -r ${trep} -c ${custom_reg} -t ${XCP_OUTPUT_DIR}/template.mat -o ${XCP_OUTPUT_DIR}
+                   python  ${FLYWHEEL_BASE}/generate_taskfsfmodel.py -i ${imp} -c ${custom_reg} -t ${XCP_OUTPUT_DIR}/template.mat -o ${XCP_OUTPUT_DIR}
                    rm -rf  $cohortfile
                    echo id0,id1,id2,id3,img,task_design,confound2_custom, > $cohortfile
                    echo $base1,$base2,$id0,$id1,$im,$XCP_OUTPUT_DIR/template.fsf,${XCP_OUTPUT_DIR}/taskhrfconvolved.txt >> $cohortfile
@@ -148,7 +147,7 @@ if [[ $(ls -f $FMRIPREPDIR/*zip 2>/dev/null ) ]]; then
          base1=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*))
          base2=$(basename $(ls -d $XCP_OUTPUT_DIR/fmriprep/*/fmriprep/sub-*/ses-${ses}))
          custom_reg=$(ls -f ${CUSTOM_REGRESSORS}/*txt)
-         python  ${FLYWHEEL_BASE}/generate_taskfsfmodel.py -r ${trep} -c ${custom_reg}  -o ${XCP_OUTPUT_DIR}
+         python  ${FLYWHEEL_BASE}/generate_taskfsfmodel.py -i ${im} -c ${custom_reg}  -o ${XCP_OUTPUT_DIR}
          rm -rf  $cohortfile
          echo id0,id1,id2,id3,img,confound2_custom, > $cohortfile
         echo $base1,$base2,$id0,$id1,$im,${XCP_OUTPUT_DIR}/taskhrfconvolved.txt >> $cohortfile
