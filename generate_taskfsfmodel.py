@@ -64,7 +64,7 @@ if opts.customreg:
     for i in np.arange(0,customreg.shape[1]):
         tt=np.convolve(customreg[:,i],hrf_signal)
         taskcon[:,i]=tt[:-N]
-if taskcon.any() and taskconx.shape[0]>0:
+if taskcon.any() and len(taskconx)>0:
     if taskconv.shape[0] != taskconv.shape[0]:
         nv = taskcon.shape[0]-taskconv.shape[0]-1
         taskx = taskcon[nv:-1:,]
