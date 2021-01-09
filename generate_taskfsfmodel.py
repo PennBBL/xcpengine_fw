@@ -55,11 +55,12 @@ def hrf(times):
 
 
 if opts.customreg:
-    customreg=pd.read_csv(opts.customreg,sep='\t',header=None).to_numpy()
+    customreg=pd.read_csv(opts.customreg,sep=' ',header=None).to_numpy()
     hrf_times = np.arange(0, 35, t_rep)
     hrf_signal = hrf(hrf_times)
     N=len(hrf_signal)-1 #number to remove
     taskcon=np.zeros(customreg.shape)
+    customreg=customreg.astype('float64')
     for i in np.arange(0,customreg.shape[1]):
         tt=np.convolve(customreg[:,i],hrf_signal)
         taskcon[:,i]=tt[:-N]
