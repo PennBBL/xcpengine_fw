@@ -64,7 +64,7 @@ if opts.customreg:
     for i in np.arange(0,customreg.shape[1]):
         tt=np.convolve(customreg[:,i],hrf_signal)
         taskcon[:,i]=tt[:-N]
-if taskcon and taskconx:
+if taskcon.any() and taskconx.shape[0]>0:
     if taskconv.shape[0] != taskconv.shape[0]:
         nv = taskcon.shape[0]-taskconv.shape[0]-1
         taskx = taskcon[nv:-1:,]
@@ -72,9 +72,9 @@ if taskcon and taskconx:
         taskx = taskcon
     tasknuissance = np.concatenate((taskx,taskconx),axis=1)
 else: 
-    if taskcon and not taskconx:
+    if taskcon.any() and not taskconx:
         tasknuissance=taskcon
-    elif taskconx and not taskcon: 
+    elif taskconx.any() and not taskcon: 
         tasknuissance=taskcon
 
 #this can be used fo task regressed if possible
